@@ -4,7 +4,7 @@ class Constants {
   static const String APP_NAME = "Frontend-store";
 
   // addresses
-  static const String ADDRESS_STORE_SERVER = "localhost:8080";
+  static const String ADDRESS_STORE_SERVER = "localhost:9190";
   static const String ADDRESS_AUTHENTICATION_SERVER = "localhost:8180";
 
   // authentication
@@ -15,8 +15,8 @@ class Constants {
   static const String REQUEST_LOGOUT = "/realms/$REALM/protocol/openid-connect/logout";
 
   // requests
-  static const String REQUEST_SEARCH_PRODUCTS = "/products/search/by_name";
-  static const String REQUEST_ADD_USER = "/users";
+  static const String REQUEST_SEARCH_PRODUCTS = "/products/search/by_name"; //TODO
+  static const String REQUEST_ADD_USER = "/manage/addUser";
 
   // states
 
@@ -29,8 +29,8 @@ class Constants {
   static const String CONNECTION_FAILED = "connection_failed"; //tentativi falliti
 
   // links
-  static const String LINK_RESET_PASSWORD = "***";
-  static const String LINK_FIRST_SETUP_PASSWORD = "***";
+  static const String LINK_RESET_PASSWORD = "***"; //TODO
+  static const String LINK_FIRST_SETUP_PASSWORD = "***"; //TODO
 
 
 }

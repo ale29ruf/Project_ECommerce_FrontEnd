@@ -30,7 +30,7 @@ class _LogInState extends State<LogIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Ciao amico! Inserisci le tue credenziali per accedere"),
+        title: const Text("Clicca sul seguente bottone per procedere"),
       ),
       body: Stack(
         children: [
@@ -49,14 +49,7 @@ class _LogInState extends State<LogIn> {
                   children: <Widget>[
                     const Padding(
                       padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                      child: Text(
-                        'Clicca sul seguente bottone per procedere',
-                        textAlign: TextAlign.left,
-                        textScaleFactor: 2,
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                      ),
+
                     ),
                     ExpandableLogInButton(
                       textOuterButton: "Mostra",

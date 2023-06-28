@@ -31,7 +31,7 @@ class Model {  //usata per effettuare chiamate http
       params["client_secret"] = Constants.CLIENT_SECRET;
       params["username"] = email;
       params["password"] = password;
-      String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, params, type: TypeHeader.urlencoded); //operazione bloccante
+      String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, params, false,  type: TypeHeader.urlencoded); //operazione bloccante
       if(result == ""){
         return LogInResult.error_connection_failed;
       }
@@ -107,7 +107,7 @@ class Model {  //usata per effettuare chiamate http
 
   Future<User?>? addUser(User user) async { //TODO
     try {
-      String rawResult = await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_ADD_USER, user);
+      String rawResult = await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_ADD_USER, user, true);
       if ( rawResult.contains(Constants.RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS) ) {
         return null; // not the best solution
       }

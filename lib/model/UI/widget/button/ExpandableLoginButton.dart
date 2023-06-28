@@ -80,6 +80,17 @@ class _ExpandableLogInButton extends State<ExpandableLogInButton> with TickerPro
           child: Center(
             child: Column(
               children: [
+                const Text(
+                  'Ciao amico! Inserisci le tue credenziali per accedere',
+                  textAlign: TextAlign.center,
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    fontSize: 20, // Dimensione del testo
+                    fontWeight: FontWeight.bold, // Peso del testo (es. bold, normal)
+                    color: Colors.blue, // Colore del testo
+                    fontStyle: FontStyle.italic, // Stile del testo (es. italic, normal)
+                  ),
+                ),
                 Container(
                   width: 300,
                   child: InputField(
