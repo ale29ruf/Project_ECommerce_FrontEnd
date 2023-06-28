@@ -21,11 +21,12 @@ class Constants {
   // states
 
 
-  // responses
+  // responses server
   static const String RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS = "ERROR_MAIL_USER_ALREADY_EXISTS";
 
   // messages
-  static const String MESSAGE_CONNECTION_ERROR = "connection_error";
+  static const String MESSAGE_CONNECTION_ERROR = "connection_error"; //ritenta nuova connessione
+  static const String CONNECTION_FAILED = "connection_failed"; //tentativi falliti
 
   // links
   static const String LINK_RESET_PASSWORD = "***";

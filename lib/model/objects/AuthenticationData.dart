@@ -1,11 +1,14 @@
-class AuthenticationData {
-  String accessToken;
-  String refreshToken;
-  String? error;
-  int expiresIn;
+import 'package:project_ecommerce/model/support/Constants.dart';
 
-  //Rappresenta la risposta ottenuta da keycloak
-  AuthenticationData({required this.accessToken, required this.refreshToken, this.error, required this.expiresIn,});
+/// La seguente classe rappresenta la risposta ottenuta da keycloak
+
+class AuthenticationData {
+  String? accessToken;
+  String? refreshToken;
+  String? error;
+  int? expiresIn;
+
+  AuthenticationData({this.accessToken,this.refreshToken, this.error,this.expiresIn});
 
   factory AuthenticationData.fromJson(Map<String, dynamic> json) {
     return AuthenticationData(

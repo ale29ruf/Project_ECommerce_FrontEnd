@@ -32,6 +32,9 @@ class Model {  //usata per effettuare chiamate http
       params["username"] = email;
       params["password"] = password;
       String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, params, type: TypeHeader.urlencoded); //operazione bloccante
+      if(result == ""){
+        return LogInResult.error_connection_failed;
+      }
       _authenticationData = AuthenticationData.fromJson(jsonDecode(result));
       if ( _authenticationData!.hasError() ) {
         //Gestione degli errori di keycloak
@@ -46,8 +49,7 @@ class Model {  //usata per effettuare chiamate http
         }
       }
       _restManager.token = _authenticationData!.accessToken;
-      print(_restManager.token);
-      Timer.periodic(Duration(seconds: (_authenticationData!.expiresIn - 50)), (Timer t) { //Effettua il refresh in automatico del token 50 secondi prima che scada
+      Timer.periodic(Duration(seconds: (_authenticationData!.expiresIn! - 50)), (Timer t) { //Effettua il refresh in automatico del token 50 secondi prima che scada
         _refreshToken();
       });
       return LogInResult.logged;
@@ -63,7 +65,7 @@ class Model {  //usata per effettuare chiamate http
       params["grant_type"] = "refresh_token";
       params["client_id"] = Constants.CLIENT_ID;
       params["client_secret"] = Constants.CLIENT_SECRET;
-      params["refresh_token"] = _authenticationData!.refreshToken;
+      params["refresh_token"] = _authenticationData!.refreshToken!;
       String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, params, type: TypeHeader.urlencoded);
       _authenticationData = AuthenticationData.fromJson(jsonDecode(result));
       if ( _authenticationData!.hasError() ) {
@@ -77,13 +79,13 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<bool> logOut() async {
+  Future<bool> logOut() async { //TODO
     try{
       Map<String, String> params = Map();
       _restManager.token = null;
       params["client_id"] = Constants.CLIENT_ID;
       params["client_secret"] = Constants.CLIENT_SECRET;
-      params["refresh_token"] = _authenticationData!.refreshToken;
+      params["refresh_token"] = _authenticationData!.refreshToken!;
       await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGOUT, params, type: TypeHeader.urlencoded);
       return true;
     }
@@ -92,7 +94,7 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<List<Product>?>? searchProduct(String name) async {
+  Future<List<Product>?>? searchProduct(String name) async { //TODO
     Map<String, String> params = Map();
     params["name"] = name;
     try {
@@ -103,7 +105,7 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<User?>? addUser(User user) async {
+  Future<User?>? addUser(User user) async { //TODO
     try {
       String rawResult = await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_ADD_USER, user);
       if ( rawResult.contains(Constants.RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS) ) {

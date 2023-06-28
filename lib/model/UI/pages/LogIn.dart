@@ -52,7 +52,7 @@ class _LogInState extends State<LogIn> {
                       child: Text(
                         'Clicca sul seguente bottone per procedere',
                         textAlign: TextAlign.left,
-                        textScaleFactor: 3,
+                        textScaleFactor: 2,
                         style: TextStyle(
                           color: Colors.black,
                         ),
@@ -100,8 +100,17 @@ class _LogInState extends State<LogIn> {
                             ),
                           );
                         }
-                        else if ( result == LogInResult.error_not_fully_setupped ) {
+                        else if ( result == LogInResult.error_not_fully_setupped ) { //TODO
                           await launchUrl(Constants.LINK_FIRST_SETUP_PASSWORD as Uri);
+                        }
+                        else if ( result == LogInResult.error_connection_failed ) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const MessageDialog(
+                              titleText: "Ops ... ",
+                              bodyText: "Sistema attualmente non raggiungibile. Riprova piu' tardi.",
+                            ),
+                          );
                         }
                         else {
                           showDialog(

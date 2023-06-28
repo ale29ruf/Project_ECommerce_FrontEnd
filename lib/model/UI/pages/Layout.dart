@@ -12,7 +12,7 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 2,
       child: Scaffold( //contenitore di un pannello
         appBar: AppBar( //barra dell'applicazione
           shape: const RoundedRectangleBorder(

@@ -15,12 +15,13 @@ enum TypeHeader {
 class RestManager {
   ErrorListener? delegate; //rappresenta l'interfaccia grafica -> separazione tra logica di business e interfaccia grafica. Il delegate potrebbe anche non essere passato infatti si verifica se sia null prima di invocare metodi.
   String? token;
+  static const int NUMBER_OF_REQUEST_TO_AUTH_SERVER = 2;
 
 
   Future<String> _makeRequest(String serverAddress, String servicePath, String method, TypeHeader type, {Map<String, String>? value, dynamic body}) async { //dopo il parametro "TypeHeader type" possiamo ricevere "Map<String, String>? value" oppure "dynamic body"
     Uri uri = Uri.http(serverAddress, servicePath, value);
     bool errorOccurred = false;
-    while ( true ) { //il seguente codice prova a fare la richiesta, e nel caso di errori aspetta 5 secondi e riparte di nuovo
+    for(int i=0; i<NUMBER_OF_REQUEST_TO_AUTH_SERVER; i++) { //il seguente codice prova a fare la richiesta, e nel caso di errori aspetta 5 secondi e riparte di nuovo
       try {
         var response; //risposta della richiesta. Una volta assegnato un oggetto di un certo tipo, quello stesso tipo deve essere mantenuto (vantaggio di utilizzare l'interfaccia di quel tipo dopo la prima inizializzazione)
         // setting content type
@@ -78,9 +79,11 @@ class RestManager {
           delegate!.errorNetworkOccurred(Constants.MESSAGE_CONNECTION_ERROR);
           errorOccurred = true;
         }
-        await Future.delayed(const Duration(seconds: 5), () => null); // not the best solution perchè il ciclo si ripete all'infinito
+        await Future.delayed(const Duration(seconds: 5), () => null);
       }
     }
+    delegate!.errorNetworkOccurred(Constants.CONNECTION_FAILED);
+    return "";
   }
 
   Future<String> makePostRequest(String serverAddress, String servicePath, dynamic value, {TypeHeader type = TypeHeader.json}) async {
