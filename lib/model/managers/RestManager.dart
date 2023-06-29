@@ -46,7 +46,6 @@ class RestManager {
         if ( token != null ) {
           headers[HttpHeaders.authorizationHeader] = 'bearer $token';
         }
-        headers[HttpHeaders.accessControlAllowOriginHeader] = "*";
         // making request
         switch ( method ) {
           case "post":
