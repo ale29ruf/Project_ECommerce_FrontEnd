@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 
 import '../../Model.dart';
 import '../../objects/User.dart';
+import '../../support/Constants.dart';
 import '../widget/InputField.dart';
 import '../widget/button/CircularIconButton.dart';
+import '../widget/button/StadiumButton.dart';
 import '../widget/dialog/MessageDialog.dart';
 
 class SignUp extends StatefulWidget {
@@ -33,14 +35,15 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView( //il widget consente di dare un comportamento dinamico all'interfaccia grafica. In questo caso fa apparire un elenco che non entra nello schermo del dispositivo in modo scorrevole
-        child: Column( //figlio scrollabile
+        child: Center(
+          child: Column( //figlio scrollabile
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
               child: Text(
-                'Inserisci le tue informazioni negli appositi',
+                'Inserisci le informazioni negli appositi spazi',
                 style: TextStyle(
-                  fontSize: 50,
+                  fontSize: 40,
                   color: Theme.of(context).primaryColor,
                 ),
               ),
@@ -49,45 +52,71 @@ class _SignUpState extends State<SignUp> {
               padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
               child: Column(
                 children: [
-                  InputField(
-                    labelText: "Username",
-                    controller: _userNameFiledController, //ogni campo di testo ha il proprio controller
+                  SizedBox(
+                      width: 300,
+                      child: InputField(
+                        labelText: "Username",
+                        controller: _userNameFiledController, //ogni campo di testo ha il proprio controller
+                    )
                   ),
-                  InputField(
-                    labelText: "Nome",
-                    controller: _firstNameFiledController, //ogni campo di testo ha il proprio controller
+                  SizedBox(
+                      width: 300,
+                      child: InputField(
+                          labelText: "Nome",
+                          controller: _firstNameFiledController, //ogni campo di testo ha il proprio controller
+                        )
                   ),
-                  InputField(
-                    labelText: "Cognome",
-                    controller: _lastNameFiledController,
+                  SizedBox(
+                    width: 300,
+                    child: InputField(
+                      labelText: "Cognome",
+                      controller: _lastNameFiledController,
+                    ),
                   ),
-                  InputField(
-                    labelText: "Codice fiscale",
-                    controller: _codeFiledController,
+                  SizedBox(
+                      width: 300,
+                      child: InputField(
+                        labelText: "Codice fiscale",
+                        controller: _codeFiledController,
+                      )
                   ),
-                  InputField(
-                    labelText: "Numero telefonico",
-                    controller: _telephoneNumberFiledController,
+                  SizedBox(
+                    width: 300,
+                    child: InputField(
+                      labelText: "Numero telefonico",
+                      controller: _telephoneNumberFiledController,
+                    ),
                   ),
-                  InputField(
-                    labelText: "E-mail",
-                    controller: _emailFiledController,
+                  SizedBox(
+                    width: 300,
+                    child: InputField(
+                      labelText: "E-mail",
+                      controller: _emailFiledController,
+                    ),
                   ),
-                  InputField(
-                    labelText: "Indirizzo",
-                    controller: _addressFiledController,
+                  SizedBox(
+                    width: 300,
+                    child: InputField(
+                      labelText: "Indirizzo",
+                      controller: _addressFiledController,
+                    ),
                   ),
-                  InputField(
-                    labelText: "Password",
-                    isPassword: true,
-                    controller: _passwordFiledController,
+                  SizedBox(
+                    width: 300,
+                    child: InputField(
+                      labelText: "Password",
+                      isPassword: true,
+                      controller: _passwordFiledController,
+                    ),
                   ),
-                  InputField(
-                    labelText: "Conferma password",
-                    isPassword: true,
-                    controller: _confermaPasswordFiledController,
+                  SizedBox(
+                    width: 300,
+                    child: InputField(
+                      labelText: "Conferma password",
+                      isPassword: true,
+                      controller: _confermaPasswordFiledController,
+                    ),
                   ),
-                  //Manca il campo password
                   CircularIconButton(
                     icon: Icons.person_rounded,
                     onPressed: () {
@@ -98,12 +127,25 @@ class _SignUpState extends State<SignUp> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                       child: _adding ?
-                      const CircularProgressIndicator() :
-                      _justAddedUser != null ?
-                      const Text(
-                          'Congratulazione! Utente aggiunto con successo' //TODO cambiare in modo da far apparire un riepilogo dell'utente
-                      ) :
-                      const SizedBox.shrink(), //rappresenta uno spazio vuoto senza dimensioni
+                        const CircularProgressIndicator() :
+                        _justAddedUser != null ?
+                        StadiumButton(
+                          icon: Icons.access_alarms_sharp,
+                          title: "Mostra esito",
+                          onPressed: () {
+                            String response = _createResponse();
+                            showDialog(
+                              context: context,
+                              builder: (context) => MessageDialog(
+                                titleText: response,
+                                bodyText:
+                                !_justAddedUser!.hasError() ?
+                                  "Username: ${_justAddedUser!.username} \n Email: ${_justAddedUser!.email}"  : ""
+                              ),
+                            );
+                          },
+                        ) :
+                        const SizedBox.shrink(), //rappresenta uno spazio vuoto senza dimensioni
                     ),
                   ),
                 ],
@@ -111,8 +153,23 @@ class _SignUpState extends State<SignUp> {
             ),
           ],
         ),
+        ),
       ),
     );
+  }
+
+  String _createResponse(){
+    String response = "";
+    if(_justAddedUser!.message != null){
+      if(_justAddedUser!.message == Constants.RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS){
+        response = "E-mail inserita già esistente \n Riprova";
+      } else if (_justAddedUser!.message == Constants.RESPONSE_ERROR_USERNAME_ALREADY_EXISTS){
+        response = "Username inserito già esistente \n Riprova";
+      }
+    } else {
+      response = "Utente registrato correttamente";
+    }
+    return response;
   }
 
   void _register() {
@@ -163,16 +220,21 @@ class _SignUpState extends State<SignUp> {
         username: _userNameFiledController.text,
         firstName: _firstNameFiledController.text,
         lastName: _lastNameFiledController.text,
-        code: _codeFiledController.text,
+        codFiscale: _codeFiledController.text,
         telephoneNumber: _telephoneNumberFiledController.text,
         email: _emailFiledController.text,
         address: _addressFiledController.text,
         password: _passwordFiledController.text);
 
-    Model.sharedInstance.addUser(user)?.then((result) {
+    Model.sharedInstance.addUser(user).then((result) {
+      if(result == null){
+        _justAddedUser = User(username: "username", codFiscale: "codFiscale", firstName: "firstName", lastName: "lastName", telephoneNumber: "telephoneNumber", email: "email", address: "address", password: "password");
+        _justAddedUser?.message = "Server offline \n Riprovare piu' tardi";
+      } else {
+        _justAddedUser = result ;
+      }
       setState(() {
         _adding = false;
-        _justAddedUser = result;
       });
     });
   }

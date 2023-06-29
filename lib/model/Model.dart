@@ -31,7 +31,7 @@ class Model {  //usata per effettuare chiamate http
       params["client_secret"] = Constants.CLIENT_SECRET;
       params["username"] = email;
       params["password"] = password;
-      String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, params, false,  type: TypeHeader.urlencoded); //operazione bloccante
+      String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, false, params, type: TypeHeader.urlencoded); //operazione bloccante
       if(result == ""){
         return LogInResult.error_connection_failed;
       }
@@ -66,7 +66,7 @@ class Model {  //usata per effettuare chiamate http
       params["client_id"] = Constants.CLIENT_ID;
       params["client_secret"] = Constants.CLIENT_SECRET;
       params["refresh_token"] = _authenticationData!.refreshToken!;
-      String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, params, type: TypeHeader.urlencoded);
+      String result = await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGIN, false, params, type: TypeHeader.urlencoded);
       _authenticationData = AuthenticationData.fromJson(jsonDecode(result));
       if ( _authenticationData!.hasError() ) {
         return false;
@@ -86,7 +86,7 @@ class Model {  //usata per effettuare chiamate http
       params["client_id"] = Constants.CLIENT_ID;
       params["client_secret"] = Constants.CLIENT_SECRET;
       params["refresh_token"] = _authenticationData!.refreshToken!;
-      await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGOUT, params, type: TypeHeader.urlencoded);
+      await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGOUT, false, params, type: TypeHeader.urlencoded);
       return true;
     }
     catch (e) {
@@ -94,29 +94,27 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
+  Future<User?> addUser(User user) async {
+    try {
+      String rawResult = await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_ADD_USER, true, user);
+      if(rawResult == ""){ //tentavi di connessione al server scaduti
+        return null;
+      }
+      return User.fromJson(jsonDecode(rawResult));
+    }
+    catch (e) { //errore interno al server (potrebbe essere causato anche dal parsing)
+      return null;
+    }
+  }
+
   Future<List<Product>?>? searchProduct(String name) async { //TODO
     Map<String, String> params = Map();
     params["name"] = name;
     try {
-      return List<Product>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_SEARCH_PRODUCTS, params)).map((i) => Product.fromJson(i)).toList());
+      return List<Product>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_SEARCH_PRODUCTS, true, params)).map((i) => Product.fromJson(i)).toList());
     }                                                                               //per ogni valore nel risultato, viene convertito in un oggetto Product e alla fine di tutta l'operazione convertiamo l'insieme di oggetti in una lista
     catch (e) {
       return null; // not the best solution infatti bisogna sempre restituire qualcosa
-    }
-  }
-
-  Future<User?>? addUser(User user) async { //TODO
-    try {
-      String rawResult = await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_ADD_USER, user, true);
-      if ( rawResult.contains(Constants.RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS) ) {
-        return null; // not the best solution
-      }
-      else {
-        return User.fromJson(jsonDecode(rawResult));
-      }
-    }
-    catch (e) {
-      return null; // not the best solution
     }
   }
 

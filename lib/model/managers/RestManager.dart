@@ -46,6 +46,7 @@ class RestManager {
         if ( token != null ) {
           headers[HttpHeaders.authorizationHeader] = 'bearer $token';
         }
+        headers[HttpHeaders.accessControlAllowOriginHeader] = "*";
         // making request
         switch ( method ) {
           case "post":
@@ -91,20 +92,20 @@ class RestManager {
     return "";
   }
 
-  Future<String> makePostRequest(String serverAddress, String servicePath, dynamic value, bool https, {TypeHeader type = TypeHeader.json} ) async {
+  Future<String> makePostRequest(String serverAddress, String servicePath, bool https, dynamic value, { TypeHeader type = TypeHeader.json} ) async {
     return _makeRequest(serverAddress, servicePath, "post", type, https, body: value);
   }
 
-  Future<String> makeGetRequest(String serverAddress, String servicePath, [Map<String, String>? value, TypeHeader type = TypeHeader.json]) async {
-    return _makeRequest(serverAddress, servicePath, "get", type, false, value: value);
+  Future<String> makeGetRequest(String serverAddress, String servicePath, bool https, [Map<String, String>? value, TypeHeader type = TypeHeader.json]) async {
+    return _makeRequest(serverAddress, servicePath, "get", type, https, value: value);
   }
 
-  Future<String> makePutRequest(String serverAddress, String servicePath, [Map<String, String>? value, TypeHeader type = TypeHeader.json]) async {
-    return _makeRequest(serverAddress, servicePath, "put", type, false, value: value);
+  Future<String> makePutRequest(String serverAddress, String servicePath, bool https, [Map<String, String>? value, TypeHeader type = TypeHeader.json]) async {
+    return _makeRequest(serverAddress, servicePath, "put", type, https, value: value);
   }
 
-  Future<String> makeDeleteRequest(String serverAddress, String servicePath, [Map<String, String>? value, TypeHeader type = TypeHeader.json]) async {
-    return _makeRequest(serverAddress, servicePath, "delete", type, false, value: value);
+  Future<String> makeDeleteRequest(String serverAddress, String servicePath, bool https, [Map<String, String>? value, TypeHeader type = TypeHeader.json]) async {
+    return _makeRequest(serverAddress, servicePath, "delete", type, https, value: value);
   }
 
 

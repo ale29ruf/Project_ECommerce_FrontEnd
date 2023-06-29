@@ -22,7 +22,6 @@ class _LogInState extends State<LogIn> {
   @override
   void initState() {
     super.initState();
-    if (kDebugMode) print("Avvio login");
     _isLoading = false;
   }
 
@@ -49,7 +48,6 @@ class _LogInState extends State<LogIn> {
                   children: <Widget>[
                     const Padding(
                       padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-
                     ),
                     ExpandableLogInButton(
                       textOuterButton: "Mostra",

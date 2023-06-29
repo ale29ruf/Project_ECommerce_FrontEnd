@@ -17,6 +17,7 @@ class MessageDialog extends StatelessWidget {
         titleText,
         style: TitleStyle(),
         textAlign: TextAlign.center,
+        textScaleFactor: 2,
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),

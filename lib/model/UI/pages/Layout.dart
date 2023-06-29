@@ -23,8 +23,8 @@ class Layout extends StatelessWidget {
           title: Text(title),
           bottom: const TabBar(
             tabs: [
-              Tab(text: "Log In"),
               Tab(text: "Sign Up"),
+              Tab(text: "Log In"),
             ],
           ),
         ),

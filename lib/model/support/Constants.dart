@@ -22,7 +22,9 @@ class Constants {
 
 
   // responses server
-  static const String RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS = "ERROR_MAIL_USER_ALREADY_EXISTS";
+  static const String RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS = "EMAIL_ALREADY_IN_USE";
+  static const String RESPONSE_ERROR_USERNAME_ALREADY_EXISTS = "USERNAME_ALREADY_IN_USE";
+  static const String RESPONSE_ERROR_SERVER_ERROR = "SERVER_ERROR";
 
   // messages
   static const String MESSAGE_CONNECTION_ERROR = "connection_error"; //ritenta nuova connessione
