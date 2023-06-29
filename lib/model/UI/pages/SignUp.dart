@@ -160,12 +160,14 @@ class _SignUpState extends State<SignUp> {
 
   String _createResponse(){
     String response = "";
+    print(_justAddedUser!.message);
     if(_justAddedUser!.message != null){
       if(_justAddedUser!.message == Constants.RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS){
         response = "E-mail inserita già esistente \n Riprova";
       } else if (_justAddedUser!.message == Constants.RESPONSE_ERROR_USERNAME_ALREADY_EXISTS){
         response = "Username inserito già esistente \n Riprova";
       }
+      response = "Assicurati di aver inserito correttamente i campi \n Se il problema persiste riprova piu' tardi";
     } else {
       response = "Utente registrato correttamente";
     }
@@ -196,6 +198,22 @@ class _SignUpState extends State<SignUp> {
           bodyText: "Campi non validi",
         ),
       );
+      setState(() {
+        _adding = false;
+      });
+      return;
+    }
+
+    if ( _userNameFiledController.text.length != 7 || _codeFiledController.text.length != 20){
+
+      showDialog(
+        context: context,
+        builder: (context) => const MessageDialog(
+          titleText: "Ops ... ",
+          bodyText: "Username di 7 caratteri \n Codice fiscale di 20 caratteri",
+        ),
+      );
+
       setState(() {
         _adding = false;
       });
