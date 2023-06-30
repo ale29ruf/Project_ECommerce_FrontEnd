@@ -124,8 +124,8 @@ class Model {  //usata per effettuare chiamate http
 
   Future<List<Product>?>? _searchProductPaged(int pageNumber, int pageSize, {ProductSortBy orderBy = ProductSortBy.id}) async {
     Map<String, String> params = {};
-    params["pageNumber"] = pageNumber as String;
-    params["pageSize"] = pageSize as String;
+    params["pageNumber"] = pageNumber.toString();
+    params["pageSize"] = pageSize.toString();
     if(orderBy == ProductSortBy.name) {
       params["sortBy"] = "name";
     }else if (orderBy == ProductSortBy.price){
@@ -133,7 +133,6 @@ class Model {  //usata per effettuare chiamate http
     } else {
       params["sortBy"] = "id";
     }
-
     try {
       return List<Product>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_SEARCH_PRODUCTS_PAGED, true, params)).map((i) => Product.fromJson(i)).toList());
     }                                                                               //per ogni valore nel risultato, viene convertito in un oggetto Product e alla fine di tutta l'operazione convertiamo l'insieme di oggetti in una lista

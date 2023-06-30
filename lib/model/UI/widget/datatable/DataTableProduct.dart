@@ -9,7 +9,8 @@ class DataTableProduct extends StatefulWidget {
   const DataTableProduct({super.key, this.product});
 
   @override
-  State<DataTableProduct> createState() => _DataTableProduct(this.product);
+  State<DataTableProduct> createState() => _DataTableProduct(product);
+
 }
 
 class _DataTableProduct extends State<DataTableProduct> {
@@ -21,7 +22,7 @@ class _DataTableProduct extends State<DataTableProduct> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: product == null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile')),
+        appBar: AppBar(title: product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile')),
         body: product != null? DataTableExample(product : product) : const SizedBox.shrink(),
       ),
     );
@@ -86,6 +87,7 @@ class DataTableExample extends StatelessWidget {
   List<DataRow> _caricaDatiTabella(){
     List<DataRow> rows = [];
     for (int i = 0; i < product!.length; i++) {
+      print(product![i]);
       DataRow row = DataRow(
         cells: <DataCell>[
           DataCell(Text(product![i].id as String)),
