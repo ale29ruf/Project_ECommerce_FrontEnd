@@ -7,19 +7,19 @@ class Constants {
   static const String ADDRESS_STORE_SERVER = "localhost:9190";
   static const String ADDRESS_AUTHENTICATION_SERVER = "localhost:8180";
 
-  // authentication
+  // auth_keycloak
   static const String REALM = "realm_prog";
   static const String CLIENT_ID = "server-store";
   static const String CLIENT_SECRET = "nuMDmf301DJgDJrx8UvCIoW47BWl8rv8";
   static const String REQUEST_LOGIN = "/realms/$REALM/protocol/openid-connect/token";
   static const String REQUEST_LOGOUT = "/realms/$REALM/protocol/openid-connect/logout";
 
-  // requests
-  static const String REQUEST_SEARCH_PRODUCTS = "/products/search/by_name"; //TODO
+  // auth_backend
   static const String REQUEST_ADD_USER = "/manage/addUser";
 
-  // states
-
+  // requests
+  static const String REQUEST_SEARCH_PRODUCTS_PAGED = "/products/paged";
+  static const String REQUEST_SEARCH_PRODUCTS_BY_NAME = "/products/search_by_name";
 
   // responses server
   static const String RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS = "EMAIL_ALREADY_IN_USE";

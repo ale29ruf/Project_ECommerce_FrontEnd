@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'LogIn.dart';
 import 'SignUp.dart';
 import 'Welcome.dart';
+import 'Shop.dart';
+
 
 class Layout extends StatelessWidget {
   final String title;
@@ -13,7 +15,7 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold( //contenitore di un pannello
         appBar: AppBar( //barra dell'applicazione
           shape: const RoundedRectangleBorder(
@@ -27,6 +29,7 @@ class Layout extends StatelessWidget {
               Tab(text: "Home"),
               Tab(text: "Registrati"),
               Tab(text: "Accedi"),
+              Tab(text: "Negozio"),
             ],
           ),
         ),
@@ -35,6 +38,7 @@ class Layout extends StatelessWidget {
             Welcome(),
             SignUp(),
             LogIn(),
+            Shop()
           ],
         ),
       ),

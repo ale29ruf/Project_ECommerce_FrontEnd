@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:project_ecommerce/model/support/Constants.dart';
 import 'package:project_ecommerce/model/support/LogInResult.dart';
+import 'package:project_ecommerce/model/support/ProductSortBy.dart';
 
 import 'managers/RestManager.dart';
 import 'objects/AuthenticationData.dart';
@@ -12,6 +13,7 @@ import 'objects/User.dart';
 
 class Model {  //usata per effettuare chiamate http
   static Model sharedInstance = Model(); //classe singleton. Ovviamente non e' vietato dall'esterno invocare il costruttore della classe
+  bool logged = false;
 
   final RestManager _restManager = RestManager();
   AuthenticationData? _authenticationData;
@@ -72,6 +74,7 @@ class Model {  //usata per effettuare chiamate http
         return false;
       }
       _restManager.token = _authenticationData!.accessToken;
+      logged = true;
       return true;
     }
     catch (e) {
@@ -107,16 +110,49 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<List<Product>?>? searchProduct(String name) async { //TODO
+  Future<List<Product>?>? searchProduct(String name) async { //Si presume che il prodotto ottenuto sia uno
     Map<String, String> params = Map();
     params["name"] = name;
     try {
-      return List<Product>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_SEARCH_PRODUCTS, true, params)).map((i) => Product.fromJson(i)).toList());
+      return List<Product>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_SEARCH_PRODUCTS_BY_NAME, true, params)).map((i) => Product.fromJson(i)).toList());
     }                                                                               //per ogni valore nel risultato, viene convertito in un oggetto Product e alla fine di tutta l'operazione convertiamo l'insieme di oggetti in una lista
     catch (e) {
-      return null; // not the best solution infatti bisogna sempre restituire qualcosa
+      List<Product> response = [];
+      return response;
     }
   }
 
+  Future<List<Product>?>? _searchProductPaged(int pageNumber, int pageSize, {ProductSortBy orderBy = ProductSortBy.id}) async {
+    Map<String, String> params = {};
+    params["pageNumber"] = pageNumber as String;
+    params["pageSize"] = pageSize as String;
+    if(orderBy == ProductSortBy.name) {
+      params["sortBy"] = "name";
+    }else if (orderBy == ProductSortBy.price){
+      params["sortBy"] = "price";
+    } else {
+      params["sortBy"] = "id";
+    }
+
+    try {
+      return List<Product>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_SEARCH_PRODUCTS_PAGED, true, params)).map((i) => Product.fromJson(i)).toList());
+    }                                                                               //per ogni valore nel risultato, viene convertito in un oggetto Product e alla fine di tutta l'operazione convertiamo l'insieme di oggetti in una lista
+    catch (e) {
+      List<Product> response = [];
+      return response;
+    }
+  }
+
+  Future<List<Product>?>? searchProductPagedByName(int pageNumber, int pageSize) async {
+    return _searchProductPaged(pageNumber,pageSize,orderBy: ProductSortBy.name);
+  }
+
+  Future<List<Product>?>? searchProductPagedByPrice(int pageNumber, int pageSize) async {
+    return _searchProductPaged(pageNumber,pageSize,orderBy: ProductSortBy.price);
+  }
+
+  Future<List<Product>?>? searchProductPaged(int pageNumber, int pageSize) async {
+    return _searchProductPaged(pageNumber,pageSize,orderBy: ProductSortBy.id);
+  }
 
 }

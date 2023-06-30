@@ -9,6 +9,17 @@ import '../widget/dialog/MessageDialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Home.dart';
 
+//TODO aggiungere un qualcosa che segnali lo stato logged o unlogged dell'utente
+/*
+  Navigator.of(context).push( //permette di posizionare al di sopra della pagina in cui ci troviamo un'altra pagina
+    PageRouteBuilder(
+    opaque: false,
+    transitionDuration: const Duration(milliseconds: 700),
+    pageBuilder: (BuildContext context, _, __) => const Home()
+  ),
+);
+
+ */
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
 
@@ -22,7 +33,6 @@ class _LogInState extends State<LogIn> {
   @override
   void initState() {
     super.initState();
-    _isLoading = false;
   }
 
   @override
@@ -74,11 +84,11 @@ class _LogInState extends State<LogIn> {
                           _isLoading = false;
                         });
                         if ( result == LogInResult.logged ) {
-                          Navigator.of(context).push( //permette di posizionare al di sopra della pagina in cui ci troviamo un'altra pagina
-                            PageRouteBuilder(
-                                opaque: false,
-                                transitionDuration: const Duration(milliseconds: 700),
-                                pageBuilder: (BuildContext context, _, __) => const Home()
+                          showDialog(
+                            context: context,
+                            builder: (context) => const MessageDialog(
+                              titleText: "Loggato con successo",
+                              bodyText: "",
                             ),
                           );
                         }
