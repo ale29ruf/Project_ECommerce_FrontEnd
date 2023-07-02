@@ -33,7 +33,7 @@ class Layout extends StatelessWidget {
             ],
           ),
         ),
-        body: const TabBarView(
+        body:  const TabBarView(
           children: [
             Welcome(),
             SignUp(),

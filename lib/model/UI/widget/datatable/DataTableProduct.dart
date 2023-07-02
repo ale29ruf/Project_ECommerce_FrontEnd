@@ -1,31 +1,56 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../Model.dart';
 import '../../../objects/Product.dart';
 
 class DataTableProduct extends StatefulWidget {
-  final List<Product>? product;
 
-  const DataTableProduct({super.key, this.product});
+  DataTableProduct({super.key});
 
   @override
-  State<DataTableProduct> createState() => _DataTableProduct(product);
+  State<DataTableProduct> createState() {
+    return _DataTableProduct();
+  }
+
 
 }
 
 class _DataTableProduct extends State<DataTableProduct> {
-  List<Product>? product;
+  List<Product>? _product;
+  final int MAX_PROD_PER_PAGE = 10;
 
-  _DataTableProduct(this.product);
+  _DataTableProduct();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile')),
-        body: product != null? DataTableExample(product : product) : const SizedBox.shrink(),
+        appBar: AppBar(title: _product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile')),
+        body: _product != null? DataTableExample(product : _product) :
+        Center(
+          child: IconButton(
+            onPressed: () {
+              _caricaProdotti();
+            },
+            icon: const Icon(Icons.pageview_rounded),
+          ),
+        ),
       ),
     );
+  }
+
+  Future<List<Product>?> _caricaProdotti() async {
+    List<Product>? product;
+    try{
+      product = await Model.sharedInstance.searchProductPaged(0, MAX_PROD_PER_PAGE);
+    } catch(e) {
+      return null;
+    }
+    setState(() {
+      _product = product;
+    });
+    return product;
   }
 
 }
@@ -50,7 +75,7 @@ class DataTableExample extends StatelessWidget {
         DataColumn(
           label: Expanded(
             child: Text(
-              'Codice acquisto',
+              'Nome',
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
@@ -58,7 +83,7 @@ class DataTableExample extends StatelessWidget {
         DataColumn(
           label: Expanded(
             child: Text(
-              'Descrizione',
+              'Codice acquisto',
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
@@ -79,6 +104,14 @@ class DataTableExample extends StatelessWidget {
             ),
           ),
         ),
+        DataColumn(
+          label: Expanded(
+            child: Text(
+              'Descrizione',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+        ),
       ],
       rows: _caricaDatiTabella() ,
     );
@@ -87,14 +120,13 @@ class DataTableExample extends StatelessWidget {
   List<DataRow> _caricaDatiTabella(){
     List<DataRow> rows = [];
     for (int i = 0; i < product!.length; i++) {
-      print(product![i]);
       DataRow row = DataRow(
         cells: <DataCell>[
-          DataCell(Text(product![i].id as String)),
+          DataCell(Text(product![i].id.toString())),
           DataCell(Text(product![i].name)),
           DataCell(Text(product![i].barCode)),
-          DataCell(Text(product![i].price as String)),
-          DataCell(Text(product![i].quantity as String)),
+          DataCell(Text(product![i].price.toString())),
+          DataCell(Text(product![i].quantity.toString())),
           DataCell(Text(product![i].description)),
         ],
       );
