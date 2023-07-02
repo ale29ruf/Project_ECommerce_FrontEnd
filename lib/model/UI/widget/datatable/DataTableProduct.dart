@@ -32,7 +32,6 @@ class _DataTableProductState extends State<DataTableProduct> {
 
   @override
   Widget build(BuildContext context) {
-    print("Rebuild DataTableProduct");
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: _product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile')),
@@ -66,7 +65,6 @@ class _DataTableProductState extends State<DataTableProduct> {
   }
 
   void refresh(){
-    print("Nel metodo refresh");
     setState(() {
 
     });
