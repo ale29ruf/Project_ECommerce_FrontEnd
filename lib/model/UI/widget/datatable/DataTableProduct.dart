@@ -28,6 +28,7 @@ class _DataTableProductState extends State<DataTableProduct> {
   void initState() {
     super.initState();
     Communicator.sharedInstance.setDataTableRefresh(refresh);
+    Communicator.sharedInstance.setCaricaprodotti(_caricaProdotti);
   }
 
   @override
@@ -35,14 +36,14 @@ class _DataTableProductState extends State<DataTableProduct> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: _product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile')),
-        body: _product != null? DataTableExample(product : _product!, selectedRow: _selectedRow,) :
+        body: _product != null ? DataTableExample(product : _product!, selectedRow: _selectedRow,) :
         Center(
           child: IconButton(
             onPressed: () {
               _caricaProdotti();
             },
             icon: const Icon(Icons.pageview_rounded),
-          ),
+          ) ,
         ),
       ),
     );
@@ -52,6 +53,7 @@ class _DataTableProductState extends State<DataTableProduct> {
     List<Product>? product;
     try{
       product = await Model.sharedInstance.searchProductPaged(0, MAX_PROD_PER_PAGE);
+      _selectedRow.clear();
       for (int i = 0; i < product!.length; i++) {
         _selectedRow.add(false);
       }
@@ -65,9 +67,7 @@ class _DataTableProductState extends State<DataTableProduct> {
   }
 
   void refresh(){
-    setState(() {
-
-    });
+    setState(() {});
   }
 
 }
