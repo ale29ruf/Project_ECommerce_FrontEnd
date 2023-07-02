@@ -13,7 +13,6 @@ class _ShopState extends State<Shop> {
 
   @override
   Widget build(BuildContext context) {
-    print("Nel metodo build di Shop");
     return Scaffold(
       appBar: AppBar(
         title: const Text('Prodotti'),
