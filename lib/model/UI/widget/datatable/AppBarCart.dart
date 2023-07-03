@@ -49,12 +49,12 @@ class _AppBarExampleState extends State<AppBarExample> {
           childAspectRatio: 2.0,
           mainAxisSpacing: 10.0,
           crossAxisSpacing: 10.0,
+          mainAxisExtent: 120,
         ),
+
         itemBuilder: (BuildContext context, int index) {
 
           return Container(
-            height: 100,
-            // tileColor: _items[index].isOdd ? oddItemColor : evenItemColor,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
               color: evenItemColor, // provare l'altro commentato eventualmente

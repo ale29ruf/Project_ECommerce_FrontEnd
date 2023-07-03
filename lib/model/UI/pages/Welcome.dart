@@ -11,7 +11,7 @@ class Welcome extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
               child: Text(
                 "Benvenuto !",
                 style: TextStyle(
@@ -21,7 +21,7 @@ class Welcome extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
               child: Icon(
                 Icons.flutter_dash,
                 size: 300,
