@@ -7,7 +7,7 @@ import '../../../objects/Product.dart';
 
 class DataTableProduct extends StatefulWidget {
 
-  DataTableProduct({super.key});
+  const DataTableProduct({super.key});
 
   @override
   State<DataTableProduct> createState() {
@@ -84,6 +84,7 @@ class DataTableExample extends StatelessWidget { ///ATTENZIONE: essendo un widge
       children: [
         Expanded(
           child: DataTable(
+            //columnSpacing: 150.0,
             columns: const <DataColumn>[
               DataColumn(
                 label: Expanded(
@@ -148,8 +149,12 @@ class DataTableExample extends StatelessWidget { ///ATTENZIONE: essendo un widge
     List<DataRow> rows = [];
     for (int i = 0; i < product.length; i++) {
       DataRow row = DataRow(
-        cells: <DataCell>[ //Text(product![i].id.toString())
-          DataCell(Text(product[i].id.toString())),
+        cells: <DataCell>[ //Text(product[i].id.toString())
+          DataCell(ConstrainedBox(constraints: const BoxConstraints(maxWidth: 250), //SET max width
+              child: Text(product[i].id.toString(),
+    overflow: TextOverflow.ellipsis),
+            
+          )),
           DataCell(Text(product[i].name)),
           DataCell(Text(product[i].barCode)),
           DataCell(Text(product[i].price.toString())),
