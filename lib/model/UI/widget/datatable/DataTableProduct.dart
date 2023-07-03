@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
+import 'package:project_ecommerce/model/support/ProductSortBy.dart';
 
 import '../../../Model.dart';
 import '../../../objects/Product.dart';
@@ -20,7 +21,9 @@ class _DataTableProductState extends State<DataTableProduct> {
   /// Posizionare in questa classe tutto cio' che non deve cambiare ad ogni rebuid del widget
   List<Product>? _product;
   final int MAX_PROD_PER_PAGE = 10;
+  int numPag = 0;
   final List<bool> _selectedRow = [];
+  ProductSortBy selectedOrder = ProductSortBy.id;
 
   _DataTableProductState();
 
@@ -34,15 +37,62 @@ class _DataTableProductState extends State<DataTableProduct> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: _product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile')),
-        body: _product != null ? DataTableExample(product : _product!, selectedRow: _selectedRow,) :
-        Center(
-          child: IconButton(
-            onPressed: () {
-              _caricaProdotti();
-            },
-            icon: const Icon(Icons.pageview_rounded),
+        appBar: AppBar(title: _product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile'),
+            leading: PopupMenuButton<ProductSortBy>(
+              tooltip: 'Seleziona il tipo di ordinamento',
+              onSelected: (ProductSortBy scelta) {
+                selectedOrder = scelta;
+                _caricaProdotti();
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<ProductSortBy>>[
+                const PopupMenuItem<ProductSortBy>(
+                  value: ProductSortBy.id,
+                  child: Text('Ordina per id'),
+                ),
+                const PopupMenuItem<ProductSortBy>(
+                  value: ProductSortBy.name,
+                  child: Text('Ordina per nome'),
+                ),
+                const PopupMenuItem<ProductSortBy>(
+                  value: ProductSortBy.price,
+                  child: Text('Ordina per prezzo'),
+                ),
+              ],
+            ),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      if(numPag >= 1) numPag--;
+                      _caricaProdotti();
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                  ) ,
+                  Text(numPag.toString()),
+                  IconButton(
+                    onPressed: () {
+                      numPag++;
+                      _caricaProdotti();
+                    },
+                    icon: const Icon(Icons.arrow_forward),
+                  )
+                ],
+              ),
+            ),
+          ],
+
+        ),
+        body: _product != null ? DataTableExample(product : _product!, selectedRow: _selectedRow) : Center(
+              child: IconButton(
+                onPressed: () {
+                  _caricaProdotti();
+                },
+                icon: const Icon(Icons.pageview_rounded),
           ) ,
         ),
       ),
@@ -52,7 +102,7 @@ class _DataTableProductState extends State<DataTableProduct> {
   Future<List<Product>?> _caricaProdotti() async {
     List<Product>? product;
     try{
-      product = await Model.sharedInstance.searchProductPaged(0, MAX_PROD_PER_PAGE);
+      product = await Model.sharedInstance.searchProductPaged(numPag, MAX_PROD_PER_PAGE, orderBy: selectedOrder);
       _selectedRow.clear();
       for (int i = 0; i < product!.length; i++) {
         _selectedRow.add(false);

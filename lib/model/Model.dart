@@ -122,7 +122,7 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<List<Product>?>? _searchProductPaged(int pageNumber, int pageSize, {ProductSortBy orderBy = ProductSortBy.id}) async {
+  Future<List<Product>?>? searchProductPaged(int pageNumber, int pageSize, {ProductSortBy orderBy = ProductSortBy.id}) async {
     Map<String, String> params = {};
     params["pageNumber"] = pageNumber.toString();
     params["pageSize"] = pageSize.toString();
@@ -140,18 +140,6 @@ class Model {  //usata per effettuare chiamate http
       List<Product> response = [];
       return response;
     }
-  }
-
-  Future<List<Product>?>? searchProductPagedByName(int pageNumber, int pageSize) async {
-    return _searchProductPaged(pageNumber,pageSize,orderBy: ProductSortBy.name);
-  }
-
-  Future<List<Product>?>? searchProductPagedByPrice(int pageNumber, int pageSize) async {
-    return _searchProductPaged(pageNumber,pageSize,orderBy: ProductSortBy.price);
-  }
-
-  Future<List<Product>?>? searchProductPaged(int pageNumber, int pageSize) async {
-    return _searchProductPaged(pageNumber,pageSize,orderBy: ProductSortBy.id);
   }
 
 }
