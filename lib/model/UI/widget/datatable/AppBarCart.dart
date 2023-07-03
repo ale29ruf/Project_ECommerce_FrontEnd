@@ -34,7 +34,6 @@ class _AppBarExampleState extends State<AppBarExample> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final Color oddItemColor = colorScheme.primary.withOpacity(0.05);
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
 
     return Scaffold(
@@ -54,7 +53,7 @@ class _AppBarExampleState extends State<AppBarExample> {
         itemBuilder: (BuildContext context, int index) {
 
           return Container(
-            alignment: Alignment.center,
+            height: 100,
             // tileColor: _items[index].isOdd ? oddItemColor : evenItemColor,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.0),
@@ -77,6 +76,7 @@ class _AppBarExampleState extends State<AppBarExample> {
                       });
                       },
                     icon: const Icon(Icons.remove_circle),
+                    tooltip: 'Rimuovi prodotto',
                   ),
                   Center(
                     child: Column(
@@ -90,9 +90,50 @@ class _AppBarExampleState extends State<AppBarExample> {
                           '${_items[index].price}\$',
                           textAlign: TextAlign.center,
                         ),
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Quantità: ${Communicator.sharedInstance.listaIdProdInCart[_items[index].id]}',
+                                textAlign: TextAlign.center,
+                              ),
+                              IconButton(
+                                tooltip: 'Aumenta quantità',
+                                onPressed: () {
+                                  int qntNow = Communicator.sharedInstance.listaIdProdInCart[_items[index].id]!;
+                                  if(qntNow+1 < _items[index].quantity){
+                                    Communicator.sharedInstance.listaIdProdInCart[_items[index].id] = qntNow+1;
+                                  }
+                                  setState(() {
+
+                                  });
+                                },
+                                icon: const Icon(Icons.add),
+                              ),
+
+                              IconButton(
+                                tooltip: 'Diminuisci quantità',
+                                onPressed: () {
+                                  int qntNow = Communicator.sharedInstance.listaIdProdInCart[_items[index].id]!;
+                                  if(qntNow-1 >= 1){
+                                    Communicator.sharedInstance.listaIdProdInCart[_items[index].id] = qntNow-1;
+                                  } else {
+                                    Communicator.sharedInstance.removeProdFromCart(_items[index]);
+                                  }
+                                  setState(() {
+                                    _items = Communicator.sharedInstance.listaProdInCart;
+                                  });
+                                },
+                                icon: const Icon(Icons.remove),
+                              ),
+                            ],
+                          ),
+                        )
+
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             )
@@ -109,9 +150,7 @@ class _AppBarExampleState extends State<AppBarExample> {
             children: <Widget>[
               ElevatedButton.icon(
                 onPressed: () {
-                  //setState(() {
 
-                  //});
                 },
                 icon: const Icon(Icons.add_card_outlined),
                 label: const Text('Conferma acquisto'),
@@ -119,7 +158,10 @@ class _AppBarExampleState extends State<AppBarExample> {
               const SizedBox(width: 5),
               ElevatedButton.icon(
                 onPressed: () {
-
+                  Communicator.sharedInstance.removeAllProdFromCart();
+                  setState(() {
+                    _items = Communicator.sharedInstance.listaProdInCart;
+                  });
                 },
                 icon: const Icon(Icons.clear),
                 label: const Text( 'Svuota carrello' ),
