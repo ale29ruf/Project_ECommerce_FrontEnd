@@ -5,9 +5,10 @@ class Communicator {
 
   static Communicator sharedInstance = Communicator();
 
-  List<Product> listaProdSelected = [];
+  List<Product> listaProdSelected = []; //lista di prodotti attualmente selezionati
   late Function _refreshTable;
   List<Product> listaProdInCart = [];
+  List<int> listaIdProdInCart = []; //gli oggetti deserializzati differiscono tra loro
   late Future<List<Product>?> Function() caricaProdotti;
 
   void addProd(Product product){
@@ -26,22 +27,28 @@ class Communicator {
     _refreshTable = function;
   }
 
-  void setCaricaprodotti(Future<List<Product>?> Function() caricaProdotti) {
+  void setCaricaProdotti(Future<List<Product>?> Function() caricaProdotti) {
     this.caricaProdotti = caricaProdotti;
   }
 
   void putProdInCart(bool addSelected) { ///Se addSelected e' true allora gli elementi selezionati vengono aggiunti al carrello, se e' false allora vengono ignorati
     if(addSelected){
       for(Product p in listaProdSelected) {
-        if(!listaProdInCart.contains(p)) listaProdInCart.add(p);
+        if(!listaIdProdInCart.contains(p.id)){
+          listaProdInCart.add(p);
+          listaIdProdInCart.add(p.id);
+        }
       }
     }
     listaProdSelected = [];
     caricaProdotti.call();
-
   }
 
 
+  void removeProdFromCart(Product prod){
+    listaProdInCart.remove(prod);
+    listaIdProdInCart.remove(prod.id);
+  }
 
 
 

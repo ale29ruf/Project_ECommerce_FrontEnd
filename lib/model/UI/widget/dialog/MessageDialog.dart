@@ -5,10 +5,10 @@ import 'RoundedDialog.dart';
 
 class MessageDialog extends StatelessWidget {
   final String titleText;
-  final String bodyText;
+  final String? bodyText;
 
 
-  const MessageDialog({super.key, required this.titleText, required this.bodyText});
+  const MessageDialog({super.key, required this.titleText, this.bodyText});
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +21,11 @@ class MessageDialog extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
-        child: Text(
-          bodyText,
+        child: bodyText != null ? Text(
+          bodyText!,
           style: ParagraphStyle(),
           textAlign: TextAlign.center,
-        ),
+        ) : const SizedBox.shrink(),
       ),
     );
   }

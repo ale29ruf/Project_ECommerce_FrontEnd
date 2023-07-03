@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_ecommerce/model/UI/widget/datatable/DataTableProduct.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
 
-import '../widget/datatable/DataTableProdInCart.dart';
+import '../widget/datatable/AppBarCart.dart';
 
 
 class Shop extends StatefulWidget {
@@ -46,10 +46,10 @@ class _ShopState extends State<Shop> {
                     ),
                     body: Communicator.sharedInstance.listaProdInCart.isEmpty ? const Center(
                       child: Text(
-                        'Questo è il carrello',
+                        'Carrello vuoto',
                         style: TextStyle(fontSize: 24),
                       ),
-                    ) : const DataTableProdInCart( )
+                    ) : const AppBarCart()
                   );
                 },
               ));
@@ -57,8 +57,8 @@ class _ShopState extends State<Shop> {
           ),
         ],
       ),
-      body: DataTableProduct(  )
-      ,);
+      body: DataTableProduct(),
+      );
   }
 
 }
