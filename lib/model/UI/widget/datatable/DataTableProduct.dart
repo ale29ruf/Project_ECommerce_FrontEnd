@@ -263,7 +263,6 @@ class DataTableExample extends StatelessWidget { ///ATTENZIONE: essendo un widge
       ],
     );
 
-
   }
 
   List<DataRow> _caricaDatiTabella(){
