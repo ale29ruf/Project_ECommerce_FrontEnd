@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
 import 'package:project_ecommerce/model/support/ProductSortBy.dart';
+import 'package:project_ecommerce/model/support/SearchBarCommunicator.dart';
 
 import '../../../Model.dart';
 import '../../../objects/Product.dart';
+import '../dialog/MessageDialog.dart';
 
 class DataTableProduct extends StatefulWidget {
 
@@ -19,10 +21,12 @@ class DataTableProduct extends StatefulWidget {
 
 class _DataTableProductState extends State<DataTableProduct> {
   /// Posizionare in questa classe tutto cio' che non deve cambiare ad ogni rebuid del widget
-  List<Product>? _product;
+
+  final List<Product> _product = []; /// Lista dei prodotti da visualizzare
+  final List<bool> _selectedRow = []; /// Lista dei booleani associati ai prodotti (necessari per la selezione all'interno della tabella)
+
   final int MAX_PROD_PER_PAGE = 10;
   int numPag = 0;
-  final List<bool> _selectedRow = [];
   ProductSortBy selectedOrder = ProductSortBy.id;
 
   _DataTableProductState();
@@ -32,6 +36,10 @@ class _DataTableProductState extends State<DataTableProduct> {
     super.initState();
     Communicator.sharedInstance.setDataTableRefresh(refresh);
     Communicator.sharedInstance.setCaricaProdotti(_caricaProdotti);
+    SearchBarCommunicator.sharedInstance.setListOfProduct(_product);
+    SearchBarCommunicator.sharedInstance.setListOfProductBool(_selectedRow);
+    SearchBarCommunicator.sharedInstance.setDataTableRefresh(refresh);
+    SearchBarCommunicator.sharedInstance.setShowBanner(showBanner);
   }
 
   @override
@@ -39,7 +47,7 @@ class _DataTableProductState extends State<DataTableProduct> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: _product != null? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile'),
+        appBar: AppBar(title: _product.isNotEmpty ? const Text('Prodotti disponibili') : const Text('Nessun prodotto disponibile'),
             leading: PopupMenuButton<ProductSortBy>(
               tooltip: 'Seleziona il tipo di ordinamento',
               onSelected: (ProductSortBy scelta) {
@@ -67,6 +75,15 @@ class _DataTableProductState extends State<DataTableProduct> {
               child: Row(
                 children: [
                   IconButton(
+                      onPressed: () {
+                        showSearch(
+                            context: context,
+                            delegate: CostumSearchDelegate()
+                        );
+                      },
+                      icon: const Icon(Icons.search)
+                  ),
+                  IconButton(
                     onPressed: () {
                       if(numPag >= 1) numPag--;
                       _caricaProdotti();
@@ -87,12 +104,12 @@ class _DataTableProductState extends State<DataTableProduct> {
           ],
 
         ),
-        body: _product != null ? DataTableExample(product : _product!, selectedRow: _selectedRow) : Center(
+        body: _product.isNotEmpty ? DataTableExample(product : _product, selectedRow: _selectedRow) : Center(
               child: IconButton(
                 onPressed: () {
                   _caricaProdotti();
                 },
-                icon: const Icon(Icons.pageview_rounded),
+                icon: const Icon(Icons.add_box),
           ) ,
         ),
       ),
@@ -111,13 +128,67 @@ class _DataTableProductState extends State<DataTableProduct> {
       return null;
     }
     setState(() {
-      _product = product;
+      _product.clear();
+      for(Product p in product!) {
+        _product.add(p);
+      }
     });
     return product;
   }
 
   void refresh(){
     setState(() {});
+  }
+
+  void showBanner(String testo){
+    showDialog(
+      context: context,
+      builder: (context) => MessageDialog(
+        titleText: "Messaggio",
+        bodyText: testo,
+      ),
+    );
+  }
+
+}
+
+class CostumSearchDelegate extends SearchDelegate {
+
+  @override
+  List<Widget>? buildActions(BuildContext context) { /// rimuove l'input della search bar, se e' vuoto allora rimuove la search bar
+    return [
+      IconButton(
+          onPressed: () {
+          if(query.isEmpty){
+            close(context, null);
+          } else {
+            query = '';
+          }
+        },
+          icon: const Icon(Icons.clear)
+      )
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          SearchBarCommunicator.sharedInstance.showResultOn(query);
+          close(context, null);
+        },
+        icon: const Icon(Icons.search)
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return const SizedBox.shrink();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return const SizedBox.shrink();
   }
 
 }

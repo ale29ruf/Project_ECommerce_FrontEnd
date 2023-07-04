@@ -162,6 +162,12 @@ class _AppBarExampleState extends State<AppBarExample> {
                   setState(() {
                     _items = Communicator.sharedInstance.listaProdInCart;
                   });
+                  showDialog(
+                    context: context,
+                    builder: (context) => const MessageDialog(
+                      titleText: "Carrello svuotato con successo", bodyText: '',
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.clear),
                 label: const Text( 'Svuota carrello' ),
