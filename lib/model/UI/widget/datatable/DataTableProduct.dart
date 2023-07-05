@@ -201,67 +201,69 @@ class DataTableExample extends StatelessWidget { ///ATTENZIONE: essendo un widge
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
+    return Scaffold(
+      body: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
           child: DataTable(
-            //columnSpacing: 150.0,
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Expanded(
-                  child: Text(
-                    'Id',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                columnSpacing: 150.0,
+                columns: const <DataColumn>[
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Id',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text(
-                    'Nome',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Nome',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text(
-                    'Codice acquisto',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Codice acquisto',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text(
-                    'Prezzo',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Prezzo',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text(
-                    'Quantità',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Quantità',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              DataColumn(
-                label: Expanded(
-                  child: Text(
-                    'Descrizione',
-                    style: TextStyle(fontStyle: FontStyle.italic),
+                  DataColumn(
+                    label: Expanded(
+                      child: Text(
+                        'Descrizione',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-            rows: _caricaDatiTabella() ,
+                ],
+                rows: _caricaDatiTabella() ,
 
-          )
-        ),
-      ],
+              )
+          ),
+
+
     );
+
 
   }
 
