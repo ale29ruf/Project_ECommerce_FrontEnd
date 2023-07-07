@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:project_ecommerce/model/UI/widget/datatable/DataTableProduct.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
 
+import '../../Model.dart';
 import '../widget/datatable/AppBarCart.dart';
+import '../widget/dialog/MessageDialog.dart';
 
 
 class Shop extends StatefulWidget {
@@ -13,6 +15,11 @@ class Shop extends StatefulWidget {
 }
 
 class _ShopState extends State<Shop> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +62,38 @@ class _ShopState extends State<Shop> {
               ));
             },
           ),
+          ActionChip(
+            avatar: Icon(Model.sharedInstance.isLogged() ? Icons.check : Icons.not_interested),
+            label: const Text('Logged'),
+            autofocus: true,
+
+            elevation: 20.0,
+            backgroundColor: Colors.blue,
+            onPressed: () async {
+              if(!Model.sharedInstance.isLogged()){
+                showDialog(
+                  context: context,
+                  builder: (context) => const MessageDialog(
+                    titleText: "Non hai effettuato ancora il log-in",
+                  ),
+                );
+              } else {
+                await Model.sharedInstance.logOut();
+                  showDialog(
+                    context: context,
+                    builder: (context) => MessageDialog(
+                      titleText: Model.sharedInstance.isLogged() ? "Log-out fallito" : "Log-out eseguito con successo",
+                    ),
+                  );
+                  setState(() {  });
+                }
+            },
+          ),
         ],
       ),
       body: DataTableProduct(),
       );
   }
+
 
 }

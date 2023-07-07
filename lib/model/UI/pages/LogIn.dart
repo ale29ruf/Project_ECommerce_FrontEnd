@@ -1,15 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../Model.dart';
-import '../../support/Constants.dart';
 import '../../support/LogInResult.dart';
 import '../widget/button/ExpandableLoginButton.dart';
 import '../widget/dialog/MessageDialog.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'Home.dart';
 
-//TODO aggiungere un qualcosa che segnali lo stato logged o unlogged dell'utente
 /*
   Navigator.of(context).push( //permette di posizionare al di sopra della pagina in cui ci troviamo un'altra pagina
     PageRouteBuilder(
@@ -100,9 +95,6 @@ class _LogInState extends State<LogIn> {
                               bodyText: "Username o password scorretti",
                             ),
                           );
-                        }
-                        else if ( result == LogInResult.error_not_fully_setupped ) { //TODO
-                          await launchUrl(Constants.LINK_FIRST_SETUP_PASSWORD as Uri);
                         }
                         else if ( result == LogInResult.error_connection_failed ) {
                           showDialog(

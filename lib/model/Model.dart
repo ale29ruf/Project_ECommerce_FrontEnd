@@ -1,22 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:project_ecommerce/model/objects/ProductInPurchase.dart';
 import 'package:project_ecommerce/model/support/Constants.dart';
 import 'package:project_ecommerce/model/support/LogInResult.dart';
 import 'package:project_ecommerce/model/support/ProductSortBy.dart';
 
 import 'managers/RestManager.dart';
 import 'objects/AuthenticationData.dart';
+import 'objects/Message.dart';
 import 'objects/Product.dart';
+import 'objects/Purchase.dart';
 import 'objects/User.dart';
 
 
 class Model {  //usata per effettuare chiamate http
   static Model sharedInstance = Model(); //classe singleton. Ovviamente non e' vietato dall'esterno invocare il costruttore della classe
-  bool logged = false;
 
   final RestManager _restManager = RestManager();
   AuthenticationData? _authenticationData;
+
+  bool logged = false;
 
   /// I metodi dichiarati come async in Dart dovrebbero sempre restituire un oggetto Future. L'uso di async indica che il metodo contiene operazioni
   /// asincrone, che potrebbero richiedere del tempo per essere completate. Restituendo un oggetto Future, si permette al chiamante del metodo di gestire
@@ -51,6 +55,7 @@ class Model {  //usata per effettuare chiamate http
         }
       }
       _restManager.token = _authenticationData!.accessToken;
+      logged = true;
       Timer.periodic(Duration(seconds: (_authenticationData!.expiresIn! - 50)), (Timer t) { //Effettua il refresh in automatico del token 50 secondi prima che scada
         _refreshToken();
       });
@@ -74,7 +79,6 @@ class Model {  //usata per effettuare chiamate http
         return false;
       }
       _restManager.token = _authenticationData!.accessToken;
-      logged = true;
       return true;
     }
     catch (e) {
@@ -82,7 +86,7 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<bool> logOut() async { //TODO
+  Future<bool> logOut() async {
     try{
       Map<String, String> params = Map();
       _restManager.token = null;
@@ -90,6 +94,7 @@ class Model {  //usata per effettuare chiamate http
       params["client_secret"] = Constants.CLIENT_SECRET;
       params["refresh_token"] = _authenticationData!.refreshToken!;
       await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGOUT, false, params, type: TypeHeader.urlencoded);
+      logged = false;
       return true;
     }
     catch (e) {
@@ -140,6 +145,94 @@ class Model {  //usata per effettuare chiamate http
       List<Product> response = [];
       return response;
     }
+  }
+
+  Future<List<ProductInPurchase>?>? getCart() async {
+    try {
+      return List<ProductInPurchase>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.GET_CART, true)).map((i) => ProductInPurchase.fromJson(i)).toList());
+    }
+    catch (e) {
+      List<ProductInPurchase> response = [];
+      return response;
+    }
+  }
+
+  Future<Message?>? addProductToCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+    Map<String, String> params = Map();
+    params["idProd"] = id;
+    try {
+      return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.ADD_PROD_TO_CART, true, params)));
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  // Possiamo passare direttamente la lista al metodo makePostRequest perchè tanto il metodo json.encode in _makeRequest del RestManager si occupa di invocare dietro le quinte toJson sugli elementi della lista
+  Future<Message?>? addAllProductToCart(List<ProductInPurchase> list) async {
+    try {
+      return Message.fromJson(json.decode(await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.ADD_ALL_PROD_TO_CART, true, list)));
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  Future<Message?>? removeProductFromCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+    Map<String, String> params = Map();
+    params["idProd"] = id;
+    try {
+      return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REMOVE_PROD_FROM_CART, true, params)));
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  Future<Message?>? removeAllProductFromCart() async {
+    try {
+      return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REMOVE_ALL_PROD_FROM_CART, true)));
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  Future<Message?>? plusProductOfCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+    Map<String, String> params = Map();
+    params["idProd"] = id;
+    try {
+      return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.PLUS_PROD_OF_CART, true, params)));
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  Future<Message?>? minusProductOfCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+    Map<String, String> params = Map();
+    params["idProd"] = id;
+    try {
+      return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.MINUS_PROD_OF_CART, true, params)));
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  Future<Purchase?>? createPurchase(List<ProductInPurchase> list) async {
+    try {
+      return Purchase.fromJson(json.decode(await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.ADD_PURCHASE, true, list)));
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+
+
+  bool isLogged() {
+    return logged;
   }
 
 }

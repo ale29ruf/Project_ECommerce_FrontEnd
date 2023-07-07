@@ -1,4 +1,5 @@
 
+import 'package:project_ecommerce/model/Model.dart';
 import 'package:project_ecommerce/model/objects/Product.dart';
 
 class Communicator {
@@ -37,6 +38,9 @@ class Communicator {
         if(!listaIdProdInCart.containsKey(p.id)){
           listaProdInCart.add(p);
           listaIdProdInCart[p.id]=1;
+          if(Model.sharedInstance.isLogged()){
+
+          }
         }
       }
     }

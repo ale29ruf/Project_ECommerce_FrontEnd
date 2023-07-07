@@ -18,6 +18,9 @@ class RestManager {
   static const int NUMBER_OF_REQUEST_TO_AUTH_SERVER = 2;
 
 
+  /// Se https=true allora viene invocata una chiamata https.
+  /// Dopo il parametro "TypeHeader type" possiamo ricevere "Map<String, String>? value" oppure "dynamic body".
+  /// "value" si riferisce alla mappa dei query param, "body" invece si riferisce alla mappa del body.
   Future<String> _makeRequest(String serverAddress, String servicePath, String method, TypeHeader type, bool https, {Map<String, String>? value, dynamic body}) async { //dopo il parametro "TypeHeader type" possiamo ricevere "Map<String, String>? value" oppure "dynamic body"
     Uri uri;
     if(https) {

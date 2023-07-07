@@ -25,7 +25,7 @@ class _DataTableProductState extends State<DataTableProduct> {
   final List<Product> _product = []; /// Lista dei prodotti da visualizzare
   final List<bool> _selectedRow = []; /// Lista dei booleani associati ai prodotti (necessari per la selezione all'interno della tabella)
 
-  final int MAX_PROD_PER_PAGE = 10;
+  final int MAX_PROD_PER_PAGE = 5;
   int numPag = 0;
   ProductSortBy selectedOrder = ProductSortBy.id;
 
