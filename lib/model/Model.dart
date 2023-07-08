@@ -228,6 +228,7 @@ class Model {  //usata per effettuare chiamate http
       return Purchase.fromJson(json.decode(await _restManager.makePostRequest(Constants.ADDRESS_STORE_SERVER, Constants.ADD_PURCHASE, true, list)));
     }
     catch (e) {
+      print("Nel catch di createPurchase in Model: ${e.toString()}");
       return null;
     }
   }

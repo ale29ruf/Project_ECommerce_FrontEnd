@@ -41,7 +41,7 @@ class Constants {
   static const String ADD_PURCHASE = "/purchase";
   //Relative response from server
   static const String RESPONSE_ERROR_INTERNAL_ERROR_TRY_LATER = "INTERNAL_ERROR_TRY_LATER";
-  static const String RESPONSE_ERROR_PRODUCT = "PRODUCT_";
+  static const String RESPONSE_ERROR_PRODUCT = "PRODUCT";
 
   // responses server
   static const String RESPONSE_ERROR_MAIL_USER_ALREADY_EXISTS = "EMAIL_ALREADY_IN_USE";

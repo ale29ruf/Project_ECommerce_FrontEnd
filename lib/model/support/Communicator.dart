@@ -2,6 +2,7 @@
 import 'package:project_ecommerce/model/Model.dart';
 import 'package:project_ecommerce/model/objects/Message.dart';
 import 'package:project_ecommerce/model/objects/Product.dart';
+import 'package:project_ecommerce/model/objects/Purchase.dart';
 
 import '../objects/ProductInPurchase.dart';
 
@@ -41,6 +42,10 @@ class Communicator {
   /// Necessaria per il cambio utente
   void reset(){
     mergeCart = false;
+    clearCart();
+  }
+
+  void clearCart(){
     listaPipInCart = [];
     listIdProdInCart = [];
     listaProdSelected = [];
@@ -140,6 +145,20 @@ class Communicator {
     }
     pip.quantity--;
     return "OK";
+  }
+
+  Future<String> createPurchase() async{
+    Purchase? resoconto;
+    if(Model.sharedInstance.isLogged()){ /// Rieseguo il controllo
+      resoconto = await Model.sharedInstance.createPurchase(listaPipInCart);
+      if (resoconto == null) {
+        return "CONNECTION_ERROR";
+      } else if (resoconto.hasError()){
+        return resoconto.message!;
+      }
+      return resoconto.toString();
+    }
+    return "ACCESS_DENIED";
   }
 
 }

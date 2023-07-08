@@ -1,5 +1,4 @@
 import 'ProductInPurchase.dart';
-import 'dart:convert';
 
 class Purchase{
   int? id;
@@ -15,9 +14,10 @@ class Purchase{
       return Purchase(message: mappa['message']);
     }
     //List<ProductInPurchase> list = List<ProductInPurchase>.from(mappa['productsInPurchase'].map((i) => ProductInPurchase.fromJson(i)).toList());
-    //List<ProductInPurchase> list = List<ProductInPurchase>.from(jsonDecode(json['productsInPurchase']).map((i) => ProductInPurchase.fromJson(i)).toList());
-    List<ProductInPurchase> list = List<ProductInPurchase>.from(json.decode(mappa['productsInPurchase']).map((i) => ProductInPurchase.fromJson(i)).toList());
-    DateTime dataTime = DateTime(mappa['purchaseTime']);
+    //List<ProductInPurchase> list = List<ProductInPurchase>.from(jsonDecode(mappa['productsInPurchase']).map((i) => ProductInPurchase.fromJson(i)).toList());
+    List<ProductInPurchase> list = List<ProductInPurchase>.from(mappa['productsInPurchase'].map((i) => ProductInPurchase.fromJson(i)).toList());
+    int valueTime = mappa['purchaseTime'];
+    DateTime dataTime = DateTime.fromMillisecondsSinceEpoch(valueTime);
     List<String> split = dataTime.toString().split(" ");
     Purchase purchase = Purchase(id: mappa['id'], date: split[0], time: split[1], productsInPurchase: list);
     return purchase;
@@ -29,7 +29,7 @@ class Purchase{
 
   @override
   String toString() {
-    return "Id: $id, Time: $time, Date: $date";
+    return "Id (da mostrare all'assistenza nel caso di problemi): $id, \nOra: $time, \nGiorno: $date, \n\nProdotti acquistati: $productsInPurchase";
   }
 
 }

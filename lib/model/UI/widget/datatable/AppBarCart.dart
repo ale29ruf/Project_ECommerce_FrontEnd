@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_ecommerce/model/objects/ProductInPurchase.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
 
+import '../../../Model.dart';
 import '../../../support/Constants.dart';
 import '../dialog/MessageDialog.dart';
 
@@ -30,7 +31,7 @@ class AppBarExample extends StatefulWidget {
 
 class _AppBarExampleState extends State<AppBarExample> {
   double? scrolledUnderElevation;
-  final List<ProductInPurchase> _items = Communicator.sharedInstance.listaPipInCart;
+  List<ProductInPurchase> _items = Communicator.sharedInstance.listaPipInCart;
 
   @override
   Widget build(BuildContext context) {
@@ -166,8 +167,28 @@ class _AppBarExampleState extends State<AppBarExample> {
             overflowSpacing: 5.0,
             children: <Widget>[
               ElevatedButton.icon(
-                onPressed: () {
-
+                onPressed: () async {
+                  if(!Model.sharedInstance.isLogged()){
+                    showDialog(
+                      context: context,
+                      builder: (context) => const MessageDialog(
+                        titleText: "Impossibile procedere con l'acquisto. Effettua prima il log-in",
+                      ),
+                    );
+                  } else {
+                    String esito = await Communicator.sharedInstance.createPurchase();
+                    showDialog(
+                      context: context,
+                      builder: (context) => MessageDialog(
+                        titleText: "Resoconto acquisto",
+                        bodyText: verifyPurchaseResponse(esito),
+                      ),
+                    );
+                    Communicator.sharedInstance.clearCart();
+                    setState(() {
+                      _items = [];
+                    });
+                  }
                 },
                 icon: const Icon(Icons.add_card_outlined),
                 label: const Text('Conferma acquisto'),
@@ -196,6 +217,7 @@ class _AppBarExampleState extends State<AppBarExample> {
     );
   }
 
+  /// Il seguente metodo si occupa di ricevere le costanti dal server o dal client ed elaborare la risposta da visualizzare
   String elaboraRisposta(String esito) {
     String risposta = "";
     if(esito == "CONNECTION_ERROR") {
@@ -204,9 +226,49 @@ class _AppBarExampleState extends State<AppBarExample> {
       risposta = "E' pregato di rieseguire il log-in. Se il problema persiste contatti l'assistenza";
     } else if (esito == Constants.RESPONSE_ERROR_INNER_ERROR_TRY_LATER) {
       risposta = "Al momento i nostri server sono pieni. Riprova piu' tardi";
-    } else if (esito == Constants.RESPONSE_ERROR_PRODUCT_IN_PURCHASE_NOT_EXIST_IN_CART){
+    } else if (esito == Constants.RESPONSE_ERROR_PRODUCT_IN_PURCHASE_NOT_EXIST_IN_CART) {
       risposta = "Il prodotto nel carrello che desideri modificare risulta essere mancante";
+    } else if (esito == Constants.RESPONSE_ERROR_INTERNAL_ERROR_TRY_LATER) {
+      risposta = "Formulazione scorretta della richiesta. Contatta l'amministratore per ulteriori chiarimenti";
+    } else if (esito == "ACCESS_DENIED") {
+      risposta = "Non hai i privilegi per accedere a questa funzionalità";
     }
     return risposta;
   }
+
+  String verifyPurchaseResponse(String esito){
+    String risposta = elaboraRisposta(esito);
+    if(risposta == "") {
+      if (esito.split('_')[0] == Constants.RESPONSE_ERROR_PRODUCT) {
+        List<String> parts = esito.split('_');
+        String nameOrIdProd = parts[1];
+        String info = parts[2];
+        switch (info) {
+          case "PRICE":
+            risposta =
+            "Ci dispiace ma sembra che il prezzo per il prodotto $nameOrIdProd risulta essere cambiato. Riprova l'acquisto";
+            break;
+          case "QUANTITY":
+            risposta =
+            "Ci dispiace ma sembra che il prodotto $nameOrIdProd per la quantità specificata risulta non essere disponibile. Riprova l'acquisto";
+            break;
+          case "NOT":
+            risposta =
+            "Ci dispiace ma sembra che il prodotto con id $nameOrIdProd risulta essere rimosso dal magazzino";
+            break;
+          case "IN":
+            risposta =
+            "Ci dispiace ma sembra che ci siano problemi di inconsistenza nel carrello. Assicurati di essere l'unico proprietario dell'account. Se il problema persiste contatta l'assistenza";
+            break;
+          case "INCONSISTENCY":
+            risposta =
+            "Ci dispiace ma sembra che ci siano problemi di inconsistenza nel carrello. Assicurati di essere l'unico proprietario dell'account. Se il problema persiste contatta l'assistenza";
+            break;
+        }
+      }
+    }
+    /// Se nessuno dei casi precedenti è contemplato ipotizziamo che è l'acquisto dunque procedo col farlo visualizzare (potrebbe essere un errore sconosciuto)
+    return esito;
+  }
+
 }
