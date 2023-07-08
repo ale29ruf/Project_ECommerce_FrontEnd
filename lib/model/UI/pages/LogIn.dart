@@ -74,6 +74,21 @@ class _LogInState extends State<LogIn> {
                           });
                           return;
                         }
+
+                        if(Model.sharedInstance.isLogged()){
+                          showDialog(
+                            context: context,
+                            builder: (context) => const MessageDialog(
+                              titleText: "Ops ... ",
+                              bodyText: "Sei gia' loggato",
+                            ),
+                          );
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          return;
+                        }
+
                         LogInResult result = await Model.sharedInstance.logIn(email, password);
                         setState(() {
                           _isLoading = false;

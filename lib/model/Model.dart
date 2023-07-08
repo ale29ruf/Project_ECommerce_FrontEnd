@@ -56,6 +56,7 @@ class Model {  //usata per effettuare chiamate http
         }
       }
       _restManager.token = _authenticationData!.accessToken;
+
       logged = true;
       Timer.periodic(Duration(seconds: (_authenticationData!.expiresIn! - 50)), (Timer t) { //Effettua il refresh in automatico del token 50 secondi prima che scada
         _refreshToken();
