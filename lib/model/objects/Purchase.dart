@@ -1,5 +1,4 @@
 import 'ProductInPurchase.dart';
-import 'ProductInPurchase.dart';
 import 'dart:convert';
 
 class Purchase{
