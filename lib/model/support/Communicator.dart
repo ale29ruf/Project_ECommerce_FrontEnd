@@ -1,16 +1,22 @@
 
 import 'package:project_ecommerce/model/Model.dart';
+import 'package:project_ecommerce/model/objects/Message.dart';
 import 'package:project_ecommerce/model/objects/Product.dart';
+
+import '../objects/ProductInPurchase.dart';
 
 class Communicator {
 
   static Communicator sharedInstance = Communicator();
 
-  List<Product> listaProdSelected = []; /// Lista di prodotti attualmente selezionati
+
   late Function _refreshTable;
-  List<Product> listaProdInCart = [];
-  Map<int,int> listaIdProdInCart = {}; /// Gli oggetti deserializzati differiscono tra loro, dunque mantengo una mappa idProd,qnt dove "qnt" e' la quantità richiesta dall'utente per quel prodotto
   late Future<List<Product>?> Function() caricaProdotti;
+
+  List<Product> listaProdSelected = []; /// Lista di prodotti attualmente selezionati
+  List<ProductInPurchase> listaPipInCart = []; /// Rappresenta il carrello locale
+  List<int> listIdProdInCart = []; /// Gli oggetti deserializzati differiscono tra loro, dunque mantengo una mappa idProd,Product
+  bool mergeCart = false; /// La merge del carrello locale con quello remoto avviene una sola volta, ovvero quando il client prima aggiunge dei prodotti nel carrello e poi si logga
 
   void addProd(Product product){
     if(!listaProdSelected.contains(product)) {
@@ -32,30 +38,108 @@ class Communicator {
     this.caricaProdotti = caricaProdotti;
   }
 
-  void putProdInCart(bool addSelected) { ///Se addSelected e' true allora gli elementi selezionati vengono aggiunti al carrello, se e' false allora vengono ignorati
-    if(addSelected){
-      for(Product p in listaProdSelected) {
-        if(!listaIdProdInCart.containsKey(p.id)){
-          listaProdInCart.add(p);
-          listaIdProdInCart[p.id]=1;
-          if(Model.sharedInstance.isLogged()){
+  /// Necessaria per il cambio utente
+  void reset(){
+    mergeCart = false;
+    listaPipInCart = [];
+    listIdProdInCart = [];
+    listaProdSelected = [];
+  }
 
-          }
+  Future<String> putProdInCart() async { ///Se addSelected e' true allora gli elementi selezionati vengono aggiunti al carrello, se e' false allora vengono ignorati
+    if(!Model.sharedInstance.isLogged()){
+      for(Product p in listaProdSelected) {
+        if(!listIdProdInCart.contains(p.id)){
+          listaPipInCart.add(ProductInPurchase(id: -1, quantity: 1, price: p.price, product: p));
+          listIdProdInCart.add(p.id);
+        }
+      }
+    } else {
+      for(Product p in listaProdSelected) {
+        Message? esito = await Model.sharedInstance.addProductToCart(p.id);
+        if (esito == null) {
+          return "CONNECTION_ERROR";
+        } else if (esito.message != "OK") {
+          return esito.message;
+        }
+        if(!listIdProdInCart.contains(p.id)){
+          listIdProdInCart.add(p.id);
         }
       }
     }
     listaProdSelected = [];
     caricaProdotti.call();
+    return "OK";
   }
 
-  void removeAllProdFromCart(){
-    listaProdInCart.clear();
-    listaIdProdInCart.clear();
+  Future<String> visualizeCart() async {
+    if(Model.sharedInstance.isLogged()){
+      if(!mergeCart){
+        Message? response = await Model.sharedInstance.addAllProductToCart(listaPipInCart); /// Aggiungo gli eventuali prodotti al carrello back-end
+        if(response == null || response.message != "OK") return response!.message;
+      }
+      mergeCart = true;
+      List<ProductInPurchase>? pipJustDownloaded = await Model.sharedInstance.getCart(); /// Riscarico tutti i prodotti dal carrello back-end
+      if(pipJustDownloaded == null) return "CONNECTION_ERROR";
+      listaPipInCart = pipJustDownloaded;
+      listIdProdInCart.clear();
+    }
+    listaProdSelected = [];
+    return "OK";
   }
 
-  void removeProdFromCart(Product prod){
-    listaProdInCart.remove(prod);
-    listaIdProdInCart.remove(prod.id);
+  Future<String> removeAllProdFromCart() async {
+    if(Model.sharedInstance.isLogged()) {
+      Message? esito = await Model.sharedInstance.removeAllProductFromCart();
+      if (esito == null) {
+        return "CONNECTION_ERROR";
+      } else if (esito.message != "OK") {
+        return esito.message;
+      }
+    }
+    listaPipInCart.clear();
+    listIdProdInCart.clear();
+    return "OK";
+  }
+
+  Future<String> removeProdFromCart(ProductInPurchase pip) async {
+    if(Model.sharedInstance.isLogged()){
+      Message? esito = await Model.sharedInstance.removeProductFromCart(pip.id);
+      if (esito == null) {
+        return "CONNECTION_ERROR";
+      } else if (esito.message != "OK") {
+        return esito.message;
+      }
+    }
+    listaPipInCart.remove(pip);
+    listIdProdInCart.remove(pip.product.id);
+    return "OK";
+  }
+
+  Future<String> plusProductOfCart(ProductInPurchase pip) async {
+    if(Model.sharedInstance.isLogged()){
+      Message? esito = await Model.sharedInstance.plusProductOfCart(pip.id);
+      if (esito == null) {
+        return "CONNECTION_ERROR";
+      } else if (esito.message != "OK") {
+        return esito.message;
+      }
+    }
+    pip.quantity++;
+    return "OK";
+  }
+
+  Future<String> minusProductOfCart(ProductInPurchase pip) async {
+    if(Model.sharedInstance.isLogged()){
+      Message? esito = await Model.sharedInstance.plusProductOfCart(pip.id);
+      if (esito == null) {
+        return "CONNECTION_ERROR";
+      } else if (esito.message != "OK") {
+        return esito.message;
+      }
+    }
+    pip.quantity--;
+    return "OK";
   }
 
 }

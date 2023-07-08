@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:project_ecommerce/model/objects/Product.dart';
+import 'package:project_ecommerce/model/objects/ProductInPurchase.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
 
+import '../../../support/Constants.dart';
 import '../dialog/MessageDialog.dart';
 
 
@@ -29,7 +30,7 @@ class AppBarExample extends StatefulWidget {
 
 class _AppBarExampleState extends State<AppBarExample> {
   double? scrolledUnderElevation;
-  List<Product> _items = Communicator.sharedInstance.listaProdInCart;
+  final List<ProductInPurchase> _items = Communicator.sharedInstance.listaPipInCart;
 
   @override
   Widget build(BuildContext context) {
@@ -55,88 +56,104 @@ class _AppBarExampleState extends State<AppBarExample> {
         itemBuilder: (BuildContext context, int index) {
 
           return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              color: evenItemColor, // provare l'altro commentato eventualmente
-            ),
-            child: Center(
-              child: Column(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const MessageDialog(
-                          titleText: "Prodotto rimosso con successo", bodyText: '',
-                        ),
-                      );
-                      Communicator.sharedInstance.removeProdFromCart(_items[index]);
-                      setState(() {
-                        _items = Communicator.sharedInstance.listaProdInCart;
-                      });
-                      },
-                    icon: const Icon(Icons.remove_circle),
-                    tooltip: 'Rimuovi prodotto',
-                  ),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _items[index].name,
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                          '${_items[index].price}\$',
-                          textAlign: TextAlign.center,
-                        ),
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Quantità: ${Communicator.sharedInstance.listaIdProdInCart[_items[index].id]}',
-                                textAlign: TextAlign.center,
-                              ),
-                              IconButton(
-                                tooltip: 'Aumenta quantità',
-                                onPressed: () {
-                                  int qntNow = Communicator.sharedInstance.listaIdProdInCart[_items[index].id]!;
-                                  if(qntNow+1 < _items[index].quantity){
-                                    Communicator.sharedInstance.listaIdProdInCart[_items[index].id] = qntNow+1;
-                                  }
-                                  setState(() {
-
-                                  });
-                                },
-                                icon: const Icon(Icons.add),
-                              ),
-
-                              IconButton(
-                                tooltip: 'Diminuisci quantità',
-                                onPressed: () {
-                                  int qntNow = Communicator.sharedInstance.listaIdProdInCart[_items[index].id]!;
-                                  if(qntNow-1 >= 1){
-                                    Communicator.sharedInstance.listaIdProdInCart[_items[index].id] = qntNow-1;
-                                  } else {
-                                    Communicator.sharedInstance.removeProdFromCart(_items[index]);
-                                  }
-                                  setState(() {
-                                    _items = Communicator.sharedInstance.listaProdInCart;
-                                  });
-                                },
-                                icon: const Icon(Icons.remove),
-                              ),
-                            ],
-                          ),
-                        )
-
-                      ],
-                    ),
-                  ),
-                ],
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: evenItemColor, // provare l'altro commentato eventualmente
               ),
-            )
+              child: Center(
+                child: Column(
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        String esito = await Communicator.sharedInstance.removeProdFromCart(_items[index]);
+                        showDialog(
+                          context: context,
+                          builder: (context) => MessageDialog(
+                            titleText: esito == "OK"? "Prodotto rimosso con successo" : elaboraRisposta(esito), bodyText: '',
+                          ),
+                        );
+
+                        setState(() {
+                          //_items = Communicator.sharedInstance.listaPipInCart;
+                        });
+                      },
+                      icon: const Icon(Icons.remove_circle),
+                      tooltip: 'Rimuovi prodotto',
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _items[index].product.name,
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            '${_items[index].price}\$',
+                            textAlign: TextAlign.center,
+                          ),
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Quantità: ${_items[index].quantity}',
+                                  textAlign: TextAlign.center,
+                                ),
+                                IconButton(
+                                  tooltip: 'Aumenta quantità',
+                                  onPressed: () async {
+                                    int qntNow = _items[index].quantity;
+                                    if(qntNow+1 <= _items[index].product.quantity){
+                                      String esito = await Communicator.sharedInstance.plusProductOfCart(_items[index]);
+                                      if(esito != "OK") {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => MessageDialog(
+                                            titleText: elaboraRisposta(esito), bodyText: '',
+                                          ),
+                                        );
+                                      }
+                                    }
+                                    setState(() {});
+                                  },
+                                  icon: const Icon(Icons.add),
+                                ),
+
+                                IconButton(
+                                  tooltip: 'Diminuisci quantità',
+                                  onPressed: () async {
+                                    int qntNow = _items[index].quantity;
+                                    String esito = "";
+                                    if(qntNow-1 >= 1){
+                                      esito = await Communicator.sharedInstance.minusProductOfCart(_items[index]);
+                                    } else {
+                                      esito = await Communicator.sharedInstance.removeProdFromCart(_items[index]);
+                                    }
+                                    if(esito != "OK"){
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => MessageDialog(
+                                          titleText: elaboraRisposta(esito), bodyText: '',
+                                        ),
+                                      );
+                                    }
+                                    setState(() {
+                                      //_items = Communicator.sharedInstance.listaPipInCart;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.remove),
+                                ),
+                              ],
+                            ),
+                          )
+
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
           );
         },
       ),
@@ -157,15 +174,15 @@ class _AppBarExampleState extends State<AppBarExample> {
               ),
               const SizedBox(width: 5),
               ElevatedButton.icon(
-                onPressed: () {
-                  Communicator.sharedInstance.removeAllProdFromCart();
+                onPressed: () async {
+                  String esito = await Communicator.sharedInstance.removeAllProdFromCart();
                   setState(() {
-                    _items = Communicator.sharedInstance.listaProdInCart;
+                    //_items = Communicator.sharedInstance.listaPipInCart;
                   });
                   showDialog(
                     context: context,
-                    builder: (context) => const MessageDialog(
-                      titleText: "Carrello svuotato con successo", bodyText: '',
+                    builder: (context) => MessageDialog(
+                      titleText: esito == "OK"? "Carrello svuotato con successo" : elaboraRisposta(esito), bodyText: '',
                     ),
                   );
                 },
@@ -177,5 +194,19 @@ class _AppBarExampleState extends State<AppBarExample> {
         ),
       ),
     );
+  }
+
+  String elaboraRisposta(String esito) {
+    String risposta = "";
+    if(esito == "CONNECTION_ERROR") {
+      risposta = "Errore di rete! Riprova piu' tardi";
+    } else if (esito == Constants.RESPONSE_ERROR_USERNAME_NOT_FOUND) {
+      risposta = "E' pregato di rieseguire il log-in. Se il problema persiste contatti l'assistenza";
+    } else if (esito == Constants.RESPONSE_ERROR_INNER_ERROR_TRY_LATER) {
+      risposta = "Al momento i nostri server sono pieni. Riprova piu' tardi";
+    } else if (esito == Constants.RESPONSE_ERROR_PRODUCT_IN_PURCHASE_NOT_EXIST_IN_CART){
+      risposta = "Il prodotto nel carrello che desideri modificare risulta essere mancante";
+    }
+    return risposta;
   }
 }

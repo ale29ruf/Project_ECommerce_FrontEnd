@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:project_ecommerce/model/objects/ProductInPurchase.dart';
+import 'package:project_ecommerce/model/support/Communicator.dart';
 import 'package:project_ecommerce/model/support/Constants.dart';
 import 'package:project_ecommerce/model/support/LogInResult.dart';
 import 'package:project_ecommerce/model/support/ProductSortBy.dart';
@@ -95,6 +96,7 @@ class Model {  //usata per effettuare chiamate http
       params["refresh_token"] = _authenticationData!.refreshToken!;
       await _restManager.makePostRequest(Constants.ADDRESS_AUTHENTICATION_SERVER, Constants.REQUEST_LOGOUT, false, params, type: TypeHeader.urlencoded);
       logged = false;
+      Communicator.sharedInstance.reset();
       return true;
     }
     catch (e) {
@@ -157,9 +159,9 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<Message?>? addProductToCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+  Future<Message?>? addProductToCart(int id) async { //Si presume che il prodotto ottenuto sia uno
     Map<String, String> params = Map();
-    params["idProd"] = id;
+    params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.ADD_PROD_TO_CART, true, params)));
     }
@@ -178,9 +180,9 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<Message?>? removeProductFromCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+  Future<Message?>? removeProductFromCart(int id) async { //Si presume che il prodotto ottenuto sia uno
     Map<String, String> params = Map();
-    params["idProd"] = id;
+    params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REMOVE_PROD_FROM_CART, true, params)));
     }
@@ -198,9 +200,9 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<Message?>? plusProductOfCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+  Future<Message?>? plusProductOfCart(int id) async { //Si presume che il prodotto ottenuto sia uno
     Map<String, String> params = Map();
-    params["idProd"] = id;
+    params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.PLUS_PROD_OF_CART, true, params)));
     }
@@ -209,9 +211,9 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-  Future<Message?>? minusProductOfCart(String id) async { //Si presume che il prodotto ottenuto sia uno
+  Future<Message?>? minusProductOfCart(int id) async { //Si presume che il prodotto ottenuto sia uno
     Map<String, String> params = Map();
-    params["idProd"] = id;
+    params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.MINUS_PROD_OF_CART, true, params)));
     }
@@ -236,3 +238,4 @@ class Model {  //usata per effettuare chiamate http
   }
 
 }
+

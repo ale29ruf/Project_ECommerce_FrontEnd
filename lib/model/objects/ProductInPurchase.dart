@@ -1,17 +1,27 @@
+import 'package:project_ecommerce/model/objects/Product.dart';
+
 class ProductInPurchase {
   int id;
   int quantity;
   double price;
-  int product;
+  Product product;
 
   ProductInPurchase({required this.id, required this.quantity, required this.price, required this.product});
 
   factory ProductInPurchase.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> prod = json['product'];
     return ProductInPurchase(
         id: json['id'],
         quantity: json['quantity'],
         price: json['price'],
-        product: json['product'],
+        product: Product(
+          id: prod['id'],
+          name: prod['name'],
+          barCode: prod['barCode'],
+          description: prod['description'],
+          price: prod['price'],
+          quantity: prod['quantity'],
+        )
     );
   }
 
@@ -19,7 +29,7 @@ class ProductInPurchase {
     'id': id,
     'quantity' : quantity,
     'price' : price,
-    'product' : product
+    'product' : product.id /// Al server serve solo l'id del prodotto
   };
 
   @override
