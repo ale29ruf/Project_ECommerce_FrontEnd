@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:project_ecommerce/model/objects/ProductInPurchase.dart';
+import 'package:project_ecommerce/model/objects/Purchase.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
 
 import '../../../Model.dart';
+import '../../../support/AppBarPurchaseCommunicator.dart';
 import '../../../support/Constants.dart';
 import '../dialog/MessageDialog.dart';
+import 'AppBarPurchase.dart';
 
 
 class AppBarCart extends StatelessWidget {
@@ -20,6 +23,7 @@ class AppBarCart extends StatelessWidget {
       home: const AppBarExample(),
     );
   }
+
 }
 
 class AppBarExample extends StatefulWidget {
@@ -213,12 +217,38 @@ class _AppBarExampleState extends State<AppBarExample> {
                 icon: const Icon(Icons.clear),
                 label: const Text( 'Svuota carrello' ),
               ),
+              ElevatedButton.icon(
+                onPressed: Model.sharedInstance.isLogged() ? ()  async {
+                  List<Purchase>? acquisti = await AppBarPurchaseCommunicator.sharedInstance.getPurchase(0); /// Avrei potuto usare anche un metodo che restituisce un booleano
+                  if(context.mounted){
+                    Navigator.push(context, MaterialPageRoute<void>(
+                      builder: (BuildContext context) {
+                        return Scaffold(
+                            appBar: AppBar(
+                              title: const Text('Storico'),
+                            ),
+                            body: acquisti!.isEmpty ? const Center(
+                              child: Text(
+                                'Nessun acquisto effettuato',
+                                style: TextStyle(fontSize: 24),
+                              ),
+                            ) : const AppBarPurchase()
+                        );
+                      },
+                    ));
+                  }
+
+                } : null,
+                icon: const Icon(Icons.storage),
+                label: const Text( 'Visualizza acquisti' ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
 
   /// Il seguente metodo si occupa di ricevere le costanti dal server o dal client ed elaborare la risposta da visualizzare
   String elaboraRisposta(String esito) {

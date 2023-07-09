@@ -233,7 +233,18 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
-
+  Future<List<Purchase>?>? getPurchase(int pageNumber, pageSize) async {
+    Map<String, String> params = {};
+    params["pageNumber"] = pageNumber.toString();
+    params["pageSize"] = pageSize.toString();
+    try {
+      return List<Purchase>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.GET_PURCHASE, true, params)).map((i) => Purchase.fromJson(i)).toList());
+    }
+    catch (e) {
+      print("Nel catch di getPurchase in Model: ${e.toString()}");
+      return [];
+    }
+  }
 
   bool isLogged() {
     return logged;
