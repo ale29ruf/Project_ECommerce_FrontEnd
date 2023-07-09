@@ -40,6 +40,7 @@ class Constants {
   //Purchase da loggato
   static const String ADD_PURCHASE = "/purchase";
   static const String GET_PURCHASE = "$ADD_PURCHASE/purchases";
+  static const String GET_PURCHASE_IN_TIME = "$GET_PURCHASE/date";
   //Relative response from server
   static const String RESPONSE_ERROR_INTERNAL_ERROR_TRY_LATER = "INTERNAL_ERROR_TRY_LATER";
   static const String RESPONSE_ERROR_PRODUCT = "PRODUCT";

@@ -5,9 +5,9 @@ import '../../support/AppBarPurchaseCommunicator.dart';
 import '../widget/datatable/AppBarPurchase.dart';
 
 class PurchaseStorage extends StatefulWidget {
-  List<Purchase>? result;
+  final List<Purchase>? result;
 
-  PurchaseStorage({super.key, this.result});
+  const PurchaseStorage({super.key, this.result});
 
   @override
   State<PurchaseStorage> createState() => _PurchaseStorageState(result!);
@@ -19,10 +19,18 @@ class _PurchaseStorageState extends State<PurchaseStorage> {
 
   _PurchaseStorageState(this.acquisti);
 
+  @override
+  void initState() {
+    super.initState();
+    AppBarPurchaseCommunicator.sharedInstance.addRefresh(refresh);
+  }
+
+  refresh(){
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('Storico'),
@@ -34,7 +42,7 @@ class _PurchaseStorageState extends State<PurchaseStorage> {
                   IconButton(
                     onPressed: () async {
                       if(numPag >= 1) numPag--;
-                      acquisti = (await AppBarPurchaseCommunicator.sharedInstance.getPurchase(numPag))!;
+                      await AppBarPurchaseCommunicator.sharedInstance.getPurchase(numPag);
                       setState(() {});
                     },
                     icon: const Icon(Icons.arrow_back),
@@ -43,8 +51,8 @@ class _PurchaseStorageState extends State<PurchaseStorage> {
                   IconButton(
                     onPressed: () async {
                       numPag++;
-                      acquisti = (await AppBarPurchaseCommunicator.sharedInstance.getPurchase(numPag))!;
-                      setState(() { });
+                      await AppBarPurchaseCommunicator.sharedInstance.getPurchase(numPag);
+                      setState(() {});
                     },
                     icon: const Icon(Icons.arrow_forward),
                   )
@@ -58,7 +66,7 @@ class _PurchaseStorageState extends State<PurchaseStorage> {
             'Nessun acquisto effettuato',
             style: TextStyle(fontSize: 24),
           ),
-        ) : const AppBarPurchase()
+        ) : AppBarPurchase() /// NON METTERE "CONST" ALTRIMENTI NON SI REBUILDA OGNI VOLTA
     );
   }
 }

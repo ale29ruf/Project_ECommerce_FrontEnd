@@ -246,6 +246,19 @@ class Model {  //usata per effettuare chiamate http
     }
   }
 
+  Future<List<Purchase>?>? getPurchaseInTime(String start, String end) async{
+    Map<String, String> params = {};
+    params["startDate"] = start;
+    params["endDate"] = end;
+    try {
+      return List<Purchase>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.GET_PURCHASE_IN_TIME, true, params)).map((i) => Purchase.fromJson(i)).toList());
+    }
+    catch (e) {
+      print("Nel catch di getPurchaseInTime in Model: ${e.toString()}");
+      return [];
+    }
+  }
+
   bool isLogged() {
     return logged;
   }

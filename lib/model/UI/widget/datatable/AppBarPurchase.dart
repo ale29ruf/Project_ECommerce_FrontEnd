@@ -16,7 +16,7 @@ class AppBarPurchase extends StatelessWidget {
         colorSchemeSeed: const Color(0xff5065a4),
         useMaterial3: true,
       ),
-      home: const AppBarExample2(restorationId: 'main'),
+      home: AppBarExample2(restorationId: 'main'), /// NON METTERE "CONST" ALTRIMENTI NON SI REBUILDA OGNI VOLTA
     );
   }
 
@@ -32,12 +32,14 @@ class AppBarExample2 extends StatefulWidget {
 
 class _AppBarPurchaseState extends State<AppBarExample2> with RestorationMixin{
   double? scrolledUnderElevation;
-  final List<Purchase> _items = AppBarPurchaseCommunicator.sharedInstance.purchases; /// Di default è la pagina 0-esima
+  /// final List<Purchase> items = AppBarPurchaseCommunicator.sharedInstance.purchases; NON FARLO ALTRIMENTI NON VIENE MODIFICATO OGNI VOLTA CHE SI EFFETTUA UN REBUILD DEL WIDGET
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Color evenItemColor = colorScheme.primary.withOpacity(0.15);
+
+    List<Purchase> items = AppBarPurchaseCommunicator.sharedInstance.purchases;
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +47,7 @@ class _AppBarPurchaseState extends State<AppBarExample2> with RestorationMixin{
         shadowColor: Theme.of(context).colorScheme.shadow,
       ),
       body: GridView.builder(
-        itemCount: _items.length,
+        itemCount: items.length,
         padding: const EdgeInsets.all(8.0),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
@@ -75,7 +77,7 @@ class _AppBarPurchaseState extends State<AppBarExample2> with RestorationMixin{
                                 context: context,
                                 builder: (context) => MessageDialog(
                                   titleText: 'Riepilogo prodotti',
-                                  bodyText: visualizzaProdotti(_items[index].productsInPurchase!),
+                                  bodyText: visualizzaProdotti(items[index].productsInPurchase!),
                                 ),
                               );
                             },
@@ -83,15 +85,15 @@ class _AppBarPurchaseState extends State<AppBarExample2> with RestorationMixin{
                             tooltip: 'Info prodotti',
                           ),
                           Text(
-                            'Id: ${_items[index].id}',
+                            'Id: ${items[index].id}',
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            'Data: ${_items[index].date}',
+                            'Data: ${items[index].date}',
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            'Ora: ${_items[index].getTime()}',
+                            'Ora: ${items[index].getTime()}',
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -165,7 +167,7 @@ class _AppBarPurchaseState extends State<AppBarExample2> with RestorationMixin{
           initialEntryMode: DatePickerEntryMode.calendarOnly,
           initialDate: DateTime.fromMillisecondsSinceEpoch(arguments! as int),
           firstDate: DateTime(2021),
-          lastDate: DateTime(2022),
+          lastDate: DateTime(2024),
         );
       },
     );
@@ -178,11 +180,12 @@ class _AppBarPurchaseState extends State<AppBarExample2> with RestorationMixin{
         _restorableDatePickerRouteFuture, 'date_picker_route_future');
   }
 
-  void _selectDate(DateTime? newSelectedDate) {
+  Future<void> _selectDate(DateTime? newSelectedDate) async {
     if (newSelectedDate != null) {
+      _selectedDate.value = newSelectedDate;
+      await AppBarPurchaseCommunicator.sharedInstance.getPurchaseInTime('${_selectedDate.value.day}-${_selectedDate.value.month}-${_selectedDate.value.year}',
+          '${_selectedDate.value.day+1}-${_selectedDate.value.month}-${_selectedDate.value.year}');
       setState(() {
-        _selectedDate.value = newSelectedDate;
-        // TODO completare
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
               'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}'),
