@@ -27,7 +27,7 @@ class Product {
 
   @override
   String toString() {
-    return "{ Id: $id, Nome: $name}";
+    return "-> Id: $id, Nome: $name \n";
   }
 
 

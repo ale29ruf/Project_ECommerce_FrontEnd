@@ -34,7 +34,7 @@ class ProductInPurchase {
 
   @override
   String toString() {
-    return "\n\n{ Id: $id, \nQuantità: $quantity, \nPrezzo: $price, \nProdotto: $product }";
+    return "\n\n Id: $id, \nQuantità: $quantity, \nPrezzo: $price, \nProdotto: $product ";
   }
 
 }
