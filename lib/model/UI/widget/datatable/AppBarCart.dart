@@ -175,7 +175,7 @@ class _AppBarExampleState extends State<AppBarExample> {
                         titleText: "Impossibile procedere con l'acquisto. Effettua prima il log-in",
                       ),
                     );
-                  } else {
+                  } else if(Communicator.sharedInstance.listaPipInCart.isNotEmpty){
                     String esito = await Communicator.sharedInstance.createPurchase();
                     showDialog(
                       context: context,
@@ -184,10 +184,13 @@ class _AppBarExampleState extends State<AppBarExample> {
                         bodyText: verifyPurchaseResponse(esito),
                       ),
                     );
-                    Communicator.sharedInstance.clearCart();
-                    setState(() {
-                      _items = [];
-                    });
+                    if(!esito.contains("_")){
+                      Communicator.sharedInstance.clearCart();
+                      setState(() {
+                        _items = [];
+                      });
+                    }
+
                   }
                 },
                 icon: const Icon(Icons.add_card_outlined),
@@ -268,7 +271,7 @@ class _AppBarExampleState extends State<AppBarExample> {
       }
     }
     /// Se nessuno dei casi precedenti è contemplato ipotizziamo che è l'acquisto dunque procedo col farlo visualizzare (potrebbe essere un errore sconosciuto)
-    return esito;
+    return risposta == ""? esito : risposta;
   }
 
 }
