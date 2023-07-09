@@ -32,7 +32,7 @@ class Model {  //usata per effettuare chiamate http
 
   Future<LogInResult> logIn(String email, String password) async { //Il risultato del metodo puo' essere restituito dopo un certo tempo, per questo restituiamo un Future
     try{                                                          //async wrappa in automatico il tipo di ritorno in un Future<LogInResult>
-      Map<String, String> params = Map();
+      Map<String, String> params = {};
       params["grant_type"] = "password";
       params["client_id"] = Constants.CLIENT_ID;
       params["client_secret"] = Constants.CLIENT_SECRET;
@@ -70,7 +70,7 @@ class Model {  //usata per effettuare chiamate http
 
   Future<bool> _refreshToken() async {
     try {
-      Map<String, String> params = Map();
+      Map<String, String> params = {};
       params["grant_type"] = "refresh_token";
       params["client_id"] = Constants.CLIENT_ID;
       params["client_secret"] = Constants.CLIENT_SECRET;
@@ -90,7 +90,7 @@ class Model {  //usata per effettuare chiamate http
 
   Future<bool> logOut() async {
     try{
-      Map<String, String> params = Map();
+      Map<String, String> params = {};
       _restManager.token = null;
       params["client_id"] = Constants.CLIENT_ID;
       params["client_secret"] = Constants.CLIENT_SECRET;
@@ -119,7 +119,7 @@ class Model {  //usata per effettuare chiamate http
   }
 
   Future<List<Product>?>? searchProduct(String name) async { //Si presume che il prodotto ottenuto sia uno
-    Map<String, String> params = Map();
+    Map<String, String> params = {};
     params["name"] = name;
     try {
       return List<Product>.from(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REQUEST_SEARCH_PRODUCTS_BY_NAME, true, params)).map((i) => Product.fromJson(i)).toList());
@@ -161,7 +161,7 @@ class Model {  //usata per effettuare chiamate http
   }
 
   Future<Message?>? addProductToCart(int id) async { //Si presume che il prodotto ottenuto sia uno
-    Map<String, String> params = Map();
+    Map<String, String> params = {};
     params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.ADD_PROD_TO_CART, true, params)));
@@ -182,7 +182,7 @@ class Model {  //usata per effettuare chiamate http
   }
 
   Future<Message?>? removeProductFromCart(int id) async { //Si presume che il prodotto ottenuto sia uno
-    Map<String, String> params = Map();
+    Map<String, String> params = {};
     params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.REMOVE_PROD_FROM_CART, true, params)));
@@ -202,7 +202,7 @@ class Model {  //usata per effettuare chiamate http
   }
 
   Future<Message?>? plusProductOfCart(int id) async { //Si presume che il prodotto ottenuto sia uno
-    Map<String, String> params = Map();
+    Map<String, String> params = {};
     params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.PLUS_PROD_OF_CART, true, params)));
@@ -213,7 +213,7 @@ class Model {  //usata per effettuare chiamate http
   }
 
   Future<Message?>? minusProductOfCart(int id) async { //Si presume che il prodotto ottenuto sia uno
-    Map<String, String> params = Map();
+    Map<String, String> params = {};
     params["idProd"] = '$id';
     try {
       return Message.fromJson(json.decode(await _restManager.makeGetRequest(Constants.ADDRESS_STORE_SERVER, Constants.MINUS_PROD_OF_CART, true, params)));

@@ -81,7 +81,11 @@ class Communicator {
     if(Model.sharedInstance.isLogged()){
       if(!mergeCart){
         Message? response = await Model.sharedInstance.addAllProductToCart(listaPipInCart); /// Aggiungo gli eventuali prodotti al carrello back-end
-        if(response == null || response.message != "OK") return response!.message;
+        if(response == null){
+          return "CONNECTION_ERROR";
+        } else if (response.message != "OK") {
+          return response.message;
+        }
       }
       mergeCart = true;
       List<ProductInPurchase>? pipJustDownloaded = await Model.sharedInstance.getCart(); /// Riscarico tutti i prodotti dal carrello back-end

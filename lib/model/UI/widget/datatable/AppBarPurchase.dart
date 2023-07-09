@@ -11,24 +11,26 @@ class AppBarPurchase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      restorationScopeId: 'app',
       theme: ThemeData(
         colorSchemeSeed: const Color(0xff5065a4),
         useMaterial3: true,
       ),
-      home: const AppBarExample2(),
+      home: const AppBarExample2(restorationId: 'main'),
     );
   }
 
 }
 
 class AppBarExample2 extends StatefulWidget {
-  const AppBarExample2({super.key});
+  const AppBarExample2({super.key, this.restorationId});
+  final String? restorationId;
 
   @override
   State<AppBarExample2> createState() => _AppBarPurchaseState();
 }
 
-class _AppBarPurchaseState extends State<AppBarExample2> {
+class _AppBarPurchaseState extends State<AppBarExample2> with RestorationMixin{
   double? scrolledUnderElevation;
   final List<Purchase> _items = AppBarPurchaseCommunicator.sharedInstance.purchases; /// Di default è la pagina 0-esima
 
@@ -89,10 +91,9 @@ class _AppBarPurchaseState extends State<AppBarExample2> {
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            'Ora: ${_items[index].time}',
+                            'Ora: ${_items[index].getTime()}',
                             textAlign: TextAlign.center,
                           ),
-
                         ],
                       ),
                     ),
@@ -112,7 +113,9 @@ class _AppBarPurchaseState extends State<AppBarExample2> {
             children: <Widget>[
               ElevatedButton.icon(
                 onPressed: () {
-
+                  setState(() {
+                    _restorableDatePickerRouteFuture.present();
+                  });
                 },
                 icon: const Icon(Icons.calendar_month),
                 label: const Text('Ordina per data'),
@@ -131,6 +134,61 @@ class _AppBarPurchaseState extends State<AppBarExample2> {
       response += '$pip\n';
     }
     return response;
+  }
+
+  @override
+  String? get restorationId => widget.restorationId;
+
+  final RestorableDateTime _selectedDate =
+  RestorableDateTime(DateTime(2021, 7, 25));
+  late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
+  RestorableRouteFuture<DateTime?>(
+    onComplete: _selectDate,
+    onPresent: (NavigatorState navigator, Object? arguments) {
+      return navigator.restorablePush(
+        _datePickerRoute,
+        arguments: _selectedDate.value.millisecondsSinceEpoch,
+      );
+    },
+  );
+
+  @pragma('vm:entry-point')
+  static Route<DateTime> _datePickerRoute(
+      BuildContext context,
+      Object? arguments,
+      ) {
+    return DialogRoute<DateTime>(
+      context: context,
+      builder: (BuildContext context) {
+        return DatePickerDialog(
+          restorationId: 'date_picker_dialog',
+          initialEntryMode: DatePickerEntryMode.calendarOnly,
+          initialDate: DateTime.fromMillisecondsSinceEpoch(arguments! as int),
+          firstDate: DateTime(2021),
+          lastDate: DateTime(2022),
+        );
+      },
+    );
+  }
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_selectedDate, 'selected_date');
+    registerForRestoration(
+        _restorableDatePickerRouteFuture, 'date_picker_route_future');
+  }
+
+  void _selectDate(DateTime? newSelectedDate) {
+    if (newSelectedDate != null) {
+      setState(() {
+        _selectedDate.value = newSelectedDate;
+        // TODO completare
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}'),
+        ));
+      });
+    }
   }
 
 }

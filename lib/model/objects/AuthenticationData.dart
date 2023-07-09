@@ -1,4 +1,3 @@
-import 'package:project_ecommerce/model/support/Constants.dart';
 
 /// La seguente classe rappresenta la risposta ottenuta da keycloak
 

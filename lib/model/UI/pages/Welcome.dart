@@ -12,7 +12,7 @@ class Welcome extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
               child: Text(
-                "Benvenuto !",
+                "Busy-store",
                 style: TextStyle(
                   fontSize: 50,
                   color: Theme.of(context).primaryColor,

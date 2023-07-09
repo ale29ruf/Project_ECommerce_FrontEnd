@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:project_ecommerce/model/UI/pages/PurchaseStorage.dart';
 import 'package:project_ecommerce/model/UI/widget/datatable/DataTableProduct.dart';
 import 'package:project_ecommerce/model/support/Communicator.dart';
 import 'package:project_ecommerce/model/support/Constants.dart';
 
 import '../../Model.dart';
+import '../../objects/Purchase.dart';
+import '../../support/AppBarPurchaseCommunicator.dart';
 import '../widget/datatable/AppBarCart.dart';
+import '../widget/datatable/AppBarPurchase.dart';
 import '../widget/dialog/MessageDialog.dart';
 
 
@@ -26,8 +30,24 @@ class _ShopState extends State<Shop> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prodotti'),
+        title: const Text('Benvenuto !'),
         actions: <Widget>[
+          IconButton(
+            onPressed: Model.sharedInstance.isLogged() ? () async {
+              List<Purchase>? resultP = await AppBarPurchaseCommunicator.sharedInstance.getPurchase(0);
+              if(context.mounted){
+                Navigator.push(context, MaterialPageRoute<void>(
+                  builder: (BuildContext context) {
+                    return PurchaseStorage(result: resultP);
+                  },
+                ));
+              }
+
+            } : null,
+            icon: const Icon(Icons.storage),
+            tooltip: 'Visualizza acquisti' ,
+
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'Aggiungi al carrello',

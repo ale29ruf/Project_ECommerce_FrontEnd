@@ -29,7 +29,12 @@ class Purchase{
 
   @override
   String toString() {
-    return "Id (da mostrare all'assistenza nel caso di problemi): $id, \nOra: $time, \nGiorno: $date, \n\nProdotti acquistati: $productsInPurchase";
+    return "Id (da mostrare all'assistenza nel caso di problemi): $id, \nOra: ${getTime()}, \nGiorno: $date, \n\nProdotti acquistati: $productsInPurchase";
+  }
+
+  String getTime() {
+    List<String> parts = time!.split('.'); /// Cosi' facendo fermiamo la stampa del tempo fino ai secondi
+    return parts[0];
   }
 
 }
