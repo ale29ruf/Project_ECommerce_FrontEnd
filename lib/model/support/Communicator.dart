@@ -77,6 +77,14 @@ class Communicator {
     return "OK";
   }
 
+  double getTot(){
+    double result = 0;
+    for(ProductInPurchase pip in listaPipInCart){
+      result += pip.price;
+    }
+    return result;
+  }
+
   Future<String> visualizeCart() async {
     if(Model.sharedInstance.isLogged()){
       if(!mergeCart){

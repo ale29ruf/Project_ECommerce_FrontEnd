@@ -195,7 +195,7 @@ class _AppBarExampleState extends State<AppBarExample> {
                   }
                 },
                 icon: const Icon(Icons.add_card_outlined),
-                label: const Text('Conferma acquisto'),
+                label: Text('Conferma acquisto -> Totale: ${Communicator.sharedInstance.getTot()} \$'),
               ),
               const SizedBox(width: 5),
               ElevatedButton.icon(
