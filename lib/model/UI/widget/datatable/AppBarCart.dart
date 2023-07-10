@@ -176,7 +176,8 @@ class _AppBarExampleState extends State<AppBarExample> {
                         titleText: "Impossibile procedere con l'acquisto. Effettua prima il log-in",
                       ),
                     );
-                  } else if(Communicator.sharedInstance.listaPipInCart.isNotEmpty){
+                  } else if(Communicator.sharedInstance.listaPipInCart.isNotEmpty &&
+                  Communicator.sharedInstance.getTot() > 0){
                     String esito = await Communicator.sharedInstance.createPurchase();
                     showDialog(
                       context: context,

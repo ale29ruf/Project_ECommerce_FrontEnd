@@ -80,7 +80,7 @@ class Communicator {
   double getTot(){
     double result = 0;
     for(ProductInPurchase pip in listaPipInCart){
-      result += pip.price;
+      result += pip.price*pip.quantity;
     }
     return result;
   }
